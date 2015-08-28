@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="action_console" model="ir.actions.client">
+            <field name="name">Console</field>
+            <field name="tag">console_homepage</field>
+            <field name="res_model">purchase.requisition</field>
+            <field name="context">{}</field>
+            <field name="help">
+                Action used to show the main windows for management to purchase process.
+            </field>
+        </record>
+        <record id="view_purchase_requisition_form" model="ir.ui.view">
+            <field name="name">Console View for Purchase Requisition</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button" position="before">
+                    <button name="%(purchase_console.action_console)d" string="Console" type="action" class="oe_highlight"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

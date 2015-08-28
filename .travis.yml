@@ -1,0 +1,34 @@
+language: python
+
+sudo: false
+
+python:
+  - "2.7"
+
+addons:
+  apt:
+    packages:
+      - expect-dev  # provides unbuffer utility
+      - python-lxml  # because pip installation is slow
+      - python-simplejson
+      - python-serial
+      - python-yaml
+
+virtualenv:
+  system_site_packages: true
+
+env:
+  - VERSION="8.0" ODOO_REPO="vauxoo/odoo" TESTS=1 LINT_CHECK=0 ODOO_LINT=0
+  - VERSION="8.0" TESTS=0 LINT_CHECK=1 ODOO_LINT=1
+
+install:
+  - git clone --single-branch --depth=1 https://github.com/vauxoo/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+  - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
+  - git clone --single-branch --depth=1 https://github.com/Vauxoo/web.git -b ${VERSION} ${HOME}/web
+  - travis_install_nightly
+
+script:
+  - travis_run_tests
+
+after_success:
+  - travis_after_tests_success

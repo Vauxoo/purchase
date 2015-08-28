@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+    <t t-name="purchase_console.console">
+        <div class="col-md-12">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h3>Requisition Number:</h3>
+                        <h3>TEN-00004</h3>
+                    </div>
+                    <div class="col-md-8">
+                            <t t-call="purchase_console.right_selectors"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <t t-call="purchase_console.action_buttons"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="content_placeholder">
+                <t t-call="purchase_console.table_content"/>
+            </div>
+        </div>
+    </t>
+    <t t-name="purchase_console.action_buttons">
+        <div class="btn-group" role="toolbar" aria-label="...">
+          <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-save"></i> Save</a>
+          <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-stop"></i> Quit</a>
+          <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-refresh"></i> Reload Forecast</a>
+        </div>
+    </t>
+    <t t-name="purchase_console.right_selectors">
+        <ul class="list-group">
+            <li class="list-group-item"><h4 class="list-group-item-heading">Vendor Name:</h4> Cras justo oddfo</li>
+            <li class="list-group-item">76 Articles Found</li>
+            <li class="list-group-item">Buy Inventory for 45 Days</li>
+        </ul>
+    </t>
+    <t  t-name="purchase_console.table_content">
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr class="text-center">
+                    <th></th>
+                    <th>Code</th>
+                    <th>Model</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Quoted</th>
+                    <th>Stock</th>
+                    <th>On Order</th>
+                    <th>Sales/Week</th>
+                    <th>Time</th>
+                    <th>Order</th>
+                    <th>Included</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><i class="fa fa-info-circle"></i></td>
+                    <td>Code</td>
+                    <td>Model</td>
+                    <td>Description</td>
+                    <td>19,90</td>
+                    <td>10,72</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0,27</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td><i class="fa fa-check-square-o"></i></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-info-circle"></i></td>
+                    <td>Code</td>
+                    <td>Model</td>
+                    <td>Description</td>
+                    <td>19,90</td>
+                    <td>10,72</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0,27</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td><i class="fa fa-check-square-o"></i></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-info-circle"></i></td>
+                    <td>Code</td>
+                    <td>Model</td>
+                    <td>Description</td>
+                    <td>19,90</td>
+                    <td>10,72</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0,27</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td><i class="fa fa-check-square-o"></i></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-info-circle"></i></td>
+                    <td>Code</td>
+                    <td>Model</td>
+                    <td>Description</td>
+                    <td>19,90</td>
+                    <td>10,72</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0,27</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td><i class="fa fa-check-square-o"></i></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-info-circle"></i></td>
+                    <td>Code</td>
+                    <td>Model</td>
+                    <td>Description</td>
+                    <td>19,90</td>
+                    <td>10,72</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0,27</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td><i class="fa fa-check-square-o"></i></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-info-circle"></i></td>
+                    <td>Code</td>
+                    <td>Model</td>
+                    <td>Description</td>
+                    <td>19,90</td>
+                    <td>10,72</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0,27</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td><i class="fa fa-check-square-o"></i></td>
+                </tr>
+            </tbody>
+            <tfooter>
+
+            </tfooter>
+        </table>
+    </t>
+</templates>

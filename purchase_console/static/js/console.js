@@ -12,15 +12,20 @@ openerp.purchase_console = function(instance) {
         init: function(parent, context) {
             this._super(parent);
             this.model_requisition = new instance.web.Model("purchase.requisition");
-            this.context = context;
+            this.actions = new instance.web.Model("ir.actions.actions");
+            this.context = context.context;
+            if (context.context.active_id) this.requisition_id = context.context.active_id;
+            console.log(this);
             console.log(context);
         },
         start: function() {
-            this._super();
-            var deferred_promises = [];
+            var self = this,
+                deferred_promises = [];
 
-            // Working on specified purchase(s)
-            if (self.statement_ids && self.statement_ids.length > 0) {
+            this._super();
+
+            // Working on specified purchase requisitions(s)
+            if (self.requisition_id) {
 
             }
         },

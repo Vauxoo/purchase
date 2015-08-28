@@ -29,7 +29,7 @@
     <t t-name="purchase_console.action_buttons">
         <div class="btn-group" role="toolbar" aria-label="...">
           <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-save"></i> Save</a>
-          <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-stop"></i> Quit</a>
+          <a t-att-href='"/web/#id=" + widget.requisition_id + "&#38;view_type=form&#38;model=purchase.requisition"' class="btn btn-default btn-sm quit" role="group" aria-label="..."><i class="fa fa-stop"></i> Quit</a>
           <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-refresh"></i> Reload Forecast</a>
         </div>
     </t>

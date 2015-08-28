@@ -5,7 +5,6 @@
             <field name="name">Console</field>
             <field name="tag">console_homepage</field>
             <field name="res_model">purchase.requisition</field>
-            <field name="context">{}</field>
             <field name="help">
                 Action used to show the main windows for management to purchase process.
             </field>

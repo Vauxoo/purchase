@@ -21,9 +21,9 @@ class PurchaseRequisition(models.Model):
         """Partners involved are the ones present as sellers in product and the ones manually added in purchase orders.
         :return:
         """
-        supplier_on_orders_ids = []
+        supplier_orders_ids = []
         if self.purchase_ids:
-            supplier_on_orders_ids = [order.partner_id.id for order in self.purchase_ids]
+            supplier_orders_ids = [order.partner_id.id for order in self.purchase_ids if not order.state in ['cancel']]
         products = []
         if self.line_ids:
             products = [line.product_id for line in self.line_ids]
@@ -32,7 +32,7 @@ class PurchaseRequisition(models.Model):
             if product.seller_ids:
                 suppliers = suppliers + [supplier for supplier in product.seller_ids]
         supplier_on_products_ids = [supplier.name.id for supplier in suppliers]
-        return supplier_on_orders_ids + supplier_on_products_ids
+        return supplier_orders_ids + supplier_on_products_ids
 
     @api.one
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
@@ -47,6 +47,9 @@ class PurchaseRequisition(models.Model):
 
     @api.one
     def _create_po_given_partner(self):
+        """When add a partner we assume you will ask for prices, then a PO is created.
+        :return:
+        """
         supplier_on_orders_ids = []
         if self.purchase_ids:
             supplier_on_orders_ids = [order.partner_id.id for order in self.purchase_ids]

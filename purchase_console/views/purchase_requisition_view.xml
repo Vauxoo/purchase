@@ -17,6 +17,9 @@
                 <xpath expr="//header/button" position="before">
                     <button name="%(purchase_console.action_console)d" string="Console" type="action" class="oe_highlight"/>
                 </xpath>
+                <xpath expr="//field[@name='multiple_rfq_per_supplier']" position="after">
+                    <field name="supplier_ids" widget="many2many_tags"/>
+                </xpath>
             </field>
         </record>
     </data>

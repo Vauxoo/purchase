@@ -44,7 +44,7 @@ openerp.purchase_console = function(instance) {
             // Working on specified purchase requisitions(s)
             if (self.requisition_id) {            // Get the function to format currencies
                 deferred_promises.push(self.model_requisition
-                    .call("read", [ [self.requisition_id], ['name', 'line_ids', 'vendors'] ])
+                    .call("read", [ [self.requisition_id], ['name', 'line_ids', 'vendors', 'state'] ])
                     .then(function(data) {
                         self.requisition = data;
                     })
@@ -54,6 +54,7 @@ openerp.purchase_console = function(instance) {
                 // Render and display
                 console.log(self.requisition);
                 self.$('.info_header_left').prepend(QWeb.render("purchase_console.header_left", {
+                    lines: self.requisition[0].line_ids.length,
                     name: self.requisition[0].name,
                 }));
                 self.$('.info_header_right').prepend(QWeb.render("purchase_console.header_right", {
@@ -61,7 +62,12 @@ openerp.purchase_console = function(instance) {
                     vendors: self.requisition[0].vendors,
                 }));
                 self.$('.content_placeholder').prepend(QWeb.render("purchase_console.table_content", {
+                    lines: self.requisition[0].line_ids.length,
                     line_ids: self.requisition[0].line_ids,
+                }));
+                self.$('.buttons_placeholder').prepend(QWeb.render("purchase_console.action_buttons", {
+                    lines: self.requisition[0].line_ids.length,
+                    widget: this,
                 }));
             }).always(function(){
                 self.render();

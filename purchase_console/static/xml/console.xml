@@ -14,21 +14,20 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <t t-call="purchase_console.action_buttons"/>
+                        <div class="buttons_placeholder"/>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-12">
-            <div class="content_placeholder">
-            </div>
+            <div class="content_placeholder"/>
         </div>
     </t>
     <t t-name="purchase_console.action_buttons">
         <div class="btn-group" role="toolbar" aria-label="...">
           <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-save"></i> Save</a>
           <a t-att-href='"/web/#id=" + widget.requisition_id + "&#38;view_type=form&#38;model=purchase.requisition"' class="btn btn-default btn-sm quit" role="group" aria-label="..."><i class="fa fa-stop"></i> Quit</a>
-          <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><i class="fa fa-refresh"></i> Reload Forecast</a>
+          <a href="#" class="btn btn-default btn-sm" role="group" aria-label="..."><span  class="badge"><i class="fa fa-refresh"></i> <t t-esc="lines"/></span> Articles Found</a>
         </div>
     </t>
     <t t-name="purchase_console.header_left">
@@ -37,7 +36,7 @@
     <t t-name="purchase_console.header_right">
             <div class="change_partner_container">
             </div>
-            <div class="row"><t t-esc="lines"/> Articles Found</div>
+            <div class="row"></div>
             <div class="row">Buy Inventory for 45 Days</div>
     </t>
     <t  t-name="purchase_console.table_content">

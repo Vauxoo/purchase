@@ -19,6 +19,26 @@
                 </xpath>
                 <xpath expr="//field[@name='multiple_rfq_per_supplier']" position="after">
                     <field name="supplier_ids" widget="many2many_tags"/>
+                    <button name="procure_products_from_suppliers" string="Procure" type="object" class="oe_link"/>
+                </xpath>
+                <xpath expr="//page[@string='Products']" position="after">
+                    <page string="Purchase Lines">
+                        <field name="po_line_ids" nolabel="True"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record id="purchase_order_line_tree_tender" model="ir.ui.view">
+            <field name="name">purchase.order.line.tree.tender</field>
+            <field name="model">purchase.order.line</field>
+            <field name="inherit_id" ref="purchase_requisition.purchase_order_line_tree_tender"/>
+            <field eval="1" name="priority"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='price_unit']" position="after">
+                    <field name="price_bid"/>
+                    <field name="last_price"/>
+                    <field name="last_invoice_id"/>
+                    <field name="accounting_cost"/>
                 </xpath>
             </field>
         </record>

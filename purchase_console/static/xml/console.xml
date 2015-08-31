@@ -48,6 +48,9 @@
                     <th>Model</th>
                     <th>Description</th>
                     <th>Price</th>
+                    <th>Axelor</th>
+                    <th>Bank</th>
+                    <th>Asustek</th>
                     <th>Quoted</th>
                     <th>Stock</th>
                     <th>On Order</th>
@@ -58,93 +61,25 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><i class="fa fa-info-circle"></i></td>
-                    <td>Code</td>
-                    <td>Model</td>
-                    <td>Description</td>
-                    <td>19,90</td>
-                    <td>10,72</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0,27</td>
-                    <td>0</td>
-                    <td>3</td>
-                    <td><i class="fa fa-check-square-o"></i></td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-info-circle"></i></td>
-                    <td>Code</td>
-                    <td>Model</td>
-                    <td>Description</td>
-                    <td>19,90</td>
-                    <td>10,72</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0,27</td>
-                    <td>0</td>
-                    <td>3</td>
-                    <td><i class="fa fa-check-square-o"></i></td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-info-circle"></i></td>
-                    <td>Code</td>
-                    <td>Model</td>
-                    <td>Description</td>
-                    <td>19,90</td>
-                    <td>10,72</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0,27</td>
-                    <td>0</td>
-                    <td>3</td>
-                    <td><i class="fa fa-check-square-o"></i></td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-info-circle"></i></td>
-                    <td>Code</td>
-                    <td>Model</td>
-                    <td>Description</td>
-                    <td>19,90</td>
-                    <td>10,72</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0,27</td>
-                    <td>0</td>
-                    <td>3</td>
-                    <td><i class="fa fa-check-square-o"></i></td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-info-circle"></i></td>
-                    <td>Code</td>
-                    <td>Model</td>
-                    <td>Description</td>
-                    <td>19,90</td>
-                    <td>10,72</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0,27</td>
-                    <td>0</td>
-                    <td>3</td>
-                    <td><i class="fa fa-check-square-o"></i></td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-info-circle"></i></td>
-                    <td>Code</td>
-                    <td>Model</td>
-                    <td>Description</td>
-                    <td>19,90</td>
-                    <td>10,72</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0,27</td>
-                    <td>0</td>
-                    <td>3</td>
-                    <td><i class="fa fa-check-square-o"></i></td>
+                <tr class="text-center">
+                    <th></th>
+                    <th>Code</th>
+                    <th>Model</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Axelor pick</th>
+                    <th>Bank pick</th>
+                    <th>Asustek pick</th>
+                    <th>Quoted</th>
+                    <th>Stock</th>
+                    <th>On Order</th>
+                    <th>Sales/Week</th>
+                    <th>Time</th>
+                    <th>Order</th>
+                    <th>Included</th>
                 </tr>
             </tbody>
             <tfooter>
-
             </tfooter>
         </table>
     </t>

@@ -15,7 +15,6 @@ openerp.purchase_console = function(instance) {
             this.actions = new instance.web.Model("ir.actions.actions");
             this.context = context.context;
             if (context.context.active_id) this.requisition_id = context.context.active_id;
-            console.log(this.model_requisition);
             this.create_form_fields = {
                 supplier_ids: {
                     id: "supplier_ids",
@@ -44,7 +43,7 @@ openerp.purchase_console = function(instance) {
             // Working on specified purchase requisitions(s)
             if (self.requisition_id) {            // Get the function to format currencies
                 deferred_promises.push(self.model_requisition
-                    .call("read", [ [self.requisition_id], ['name', 'line_ids', 'vendors', 'state'] ])
+                    .call("read", [ [self.requisition_id], ['name', 'line_ids', 'supplier_ids', 'state'] ])
                     .then(function(data) {
                         self.requisition = data;
                     })
@@ -193,6 +192,7 @@ openerp.purchase_console = function(instance) {
             var change_partner_node = new Default_node("change_partner"); change_partner_node.attrs.modifiers = "";
             self.change_partner_field = new instance.web.form.FieldMany2ManyTags(field_manager, change_partner_node);
             self.change_partner_field.appendTo(self.$(".change_partner_container"));
+            console.log(self.partner_field);
             self.change_partner_field.on("change:value", self.change_partner_field, function() {
                 // self.changePartner(this.get_value());
                 console.log('Partner Changed');

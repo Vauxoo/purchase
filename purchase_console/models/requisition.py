@@ -12,6 +12,8 @@
 from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError, Warning as UserError
 
+import openerp.addons.decimal_precision as dp
+
 
 class PurchaseRequisition(models.Model):
     _inherit = 'purchase.requisition'
@@ -59,10 +61,160 @@ class PurchaseRequisition(models.Model):
 
     supplier_ids = fields.Many2many('res.partner', compute="_get_partners_related", string='Suppliers Involved',
                                      track_visibility='always', copy=False, inverse='_create_po_given_partner')
+    line_ids = fields.One2many('purchase.requisition.line',
+                               'requisition_id', 'Products to Purchase',
+                               states={'done': [('readonly', True)]}, copy=True,
+                               track_visbility='onchange')
 
-    @api.model
+    @api.one
     def procure_products_from_suppliers(self):
         """Given a set of products compute procurements for products where those partners are suppliers.
+        TODO:
         :return:
         """
-        return True
+        if self.supplier_ids:
+            psi = self.env['product.supplierinfo'].search([('name',
+                                                           'in',
+                                                           [supplier.id for supplier in self.supplier_ids])])
+        for product in psi:
+            print product.name
+            #TODO: think this logic. It will be something complex :-(
+
+    @api.multi
+    def group_tenders(self):
+        """This method is a little wired in order to respect only this specified set of rules to group tenders.
+        TODO:
+        1. Given a set of tender lists it will cancel them and join all line_ids.
+        2. No Filter about any other topic is used to check it.
+        3. We should have a method called split-tenders when you need once it is merged split them with some other
+        logic
+        4. It will close all the other Purchase Orders and Requisitions done before and related with the merged ones.
+
+        :return:
+        """
+        requisition_obj = self.env['purchase.requisition']
+        new_requisition_id = requisition_obj.create(cr, uid, {
+            'origin': procurement.origin,
+            'date_end': procurement.date_planned,
+            'warehouse_id': warehouse_id and warehouse_id[0] or False,
+            'company_id': procurement.company_id.id,
+            'procurement_id': procurement.id,
+            'picking_type_id': procurement.rule_id.picking_type_id.id,
+        })
+
+        line_ids = {
+            'line_ids': [(0, 0, {
+                'product_id': procurement.product_id.id,
+                'product_uom_id': procurement.product_uom.id,
+                'product_qty': procurement.product_qty
+
+            })],
+        }
+        return
+
+class procurement_order(models.Model):
+    _inherit = 'procurement.order'
+
+    def _run(self, cr, uid, procurement, context=None):
+        requisition_obj = self.pool.get('purchase.requisition')
+        warehouse_obj = self.pool.get('stock.warehouse')
+        if procurement.rule_id and procurement.rule_id.action == 'buy' and procurement.product_id.purchase_requisition:
+            # Not done yet anything, TODO: logic to select the warehouse, it cannot be just the first.
+            warehouse_id = warehouse_obj.search(cr, uid, [('company_id', '=', procurement.company_id.id)], context=context)
+            requisition_id = requisition_obj.create(cr, uid, {
+                'origin': procurement.origin,
+                'date_end': procurement.date_planned,
+                'warehouse_id': warehouse_id and warehouse_id[0] or False,
+                'company_id': procurement.company_id.id,
+                'procurement_id': procurement.id,
+                'picking_type_id': procurement.rule_id.picking_type_id.id,
+                'line_ids': [(0, 0, {
+                    'product_id': procurement.product_id.id,
+                    'product_uom_id': procurement.product_uom.id,
+                    'product_qty': procurement.product_qty
+
+                })],
+            })
+            self.message_post(cr, uid, [procurement.id], body=_("Purchase Requisition created"), context=context)
+            return self.write(cr, uid, [procurement.id], {'requisition_id': requisition_id}, context=context)
+        return super(procurement_order, self)._run(cr, uid, procurement, context=context)
+
+
+class purchase_order_line(models.Model):
+    _inherit = 'purchase.order.line'
+
+    def get_last_inv_line(self):
+        """Last price is the last price paid for this product invoice based or the last price this supplier gave us the
+        less of both.
+        :return:
+        """
+        # Using SQL just to be sure all is really fast.
+        query = """(SELECT l.id, l.price_unit, i.date_invoice
+                        FROM account_invoice_line as l
+                    INNER JOIN account_invoice as i ON i.id=l.invoice_id
+                    INNER JOIN res_partner as r ON r.id=i.partner_id
+                        WHERE (l.product_id = {product_id}
+                            AND i.partner_id = {partner_id})
+                            AND i.state in ('open', 'paid')
+                    LIMIT 1)
+                    UNION
+                    (SELECT l.id, l.price_unit, i.date_invoice
+                        FROM account_invoice_line as l
+                    INNER JOIN account_invoice as i ON i.id=l.invoice_id
+                    INNER JOIN res_partner as r ON r.id=i.partner_id
+                        WHERE (l.product_id = {product_id}
+                            AND i.partner_id != {partner_id})
+                            AND i.state in ('open', 'paid')
+                    ORDER BY date_invoice DESC
+                    LIMIT 1)"""
+        self._cr.execute(query.format(product_id=self.product_id.id,
+                                      partner_id=self.order_id.partner_id.id))
+        elements = [row for row in self._cr.fetchall()]
+        return sorted(elements, key=lambda il: il[1])
+
+    @api.one
+    @api.depends()
+    def _get_prices(self):
+        """
+        :return:
+        """
+        # If it was not forced to be only one.
+        self.price_bid = 10.00
+        ils = self.get_last_inv_line()
+        print ils
+        self.last_invoice_id = ils and ils[0][0] or False
+        self.last_price = ils and ils[0][1] or 0.00
+        self.accounting_cost = 10.00
+
+    price_bid = fields.Float('Bid', digits_compute=dp.get_precision('Product Unit of Measure'),
+                             help="Technical field: for not loosing the price used for the bid, which can be generally "
+                                  "a little percentage less than the actual computed one.",
+                             compute="_get_prices")
+    last_price = fields.Float('Last', digits_compute=dp.get_precision('Product Unit of Measure'),
+                              help="Technical field: It will represent the more little one between the last purchase "
+                                   "to this supplier and the last purchase actually done. If never bought to this "
+                                   "supplier this will be the same than the last one, if never bought at all this will "
+                                   "be 0",
+                              compute="_get_prices")
+    accounting_cost = fields.Float('Acc', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                   help="Technical field: it will represent the more the actual standard cost in the "
+                                        "product (the accounting one) used as reference ",
+                                   compute="_get_prices")
+    last_invoice_id = fields.Many2one('account.invoice.line',
+                                      help="Technical field: it will represent the last account invoice line done to "
+                                           "this supplier  or simply the last invoice the one with the littlest price.",
+                                      compute="_get_prices")
+
+    # def action_draft(self, cr, uid, ids, context=None):
+    #     self.write(cr, uid, ids, {'state': 'draft'}, context=context)
+    #
+    # def action_confirm(self, cr, uid, ids, context=None):
+    #     super(purchase_order_line, self).action_confirm(cr, uid, ids, context=context)
+    #     for element in self.browse(cr, uid, ids, context=context):
+    #         if not element.quantity_bid:
+    #             self.write(cr, uid, ids, {'quantity_bid': element.product_qty}, context=context)
+    #     return True
+    #
+    # def generate_po(self, cr, uid, tender_id, context=None):
+    #     #call generate_po from tender with active_id. Called from js widget
+    #     return self.pool.get('purchase.requisition').generate_po(cr, uid, [tender_id], context=context)

@@ -19,6 +19,7 @@
                 </xpath>
                 <xpath expr="//field[@name='multiple_rfq_per_supplier']" position="after">
                     <field name="supplier_ids" widget="many2many_tags"/>
+                    <field name="advantage_discount"/>
                     <button name="procure_products_from_suppliers" string="Procure" type="object" class="oe_link"/>
                 </xpath>
                 <xpath expr="//page[@string='Products']" position="after">

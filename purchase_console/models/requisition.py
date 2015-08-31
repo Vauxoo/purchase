@@ -65,6 +65,10 @@ class PurchaseRequisition(models.Model):
                                'requisition_id', 'Products to Purchase',
                                states={'done': [('readonly', True)]}, copy=True,
                                track_visbility='onchange')
+    advantage_discount = fields.Float('Advantage Discount', default=0.02,
+                                      help="When you start negociate, may be you want to show a price a little less "
+                                           "than the effectively computed one in the system, here you can set such "
+                                           "discount to conceptually just show it in the RFQ to the supplier.")
 
     @api.one
     def procure_products_from_suppliers(self):
@@ -179,12 +183,12 @@ class purchase_order_line(models.Model):
         :return:
         """
         # If it was not forced to be only one.
-        self.price_bid = 10.00
         ils = self.get_last_inv_line()
         print ils
         self.last_invoice_id = ils and ils[0][0] or False
         self.last_price = ils and ils[0][1] or 0.00
-        self.accounting_cost = 10.00
+        self.accounting_cost = self.product_id.standard_price
+        self.price_bid = self.last_price * (1 - self.order_id.requisition_id.advantage_discount)
 
     price_bid = fields.Float('Bid', digits_compute=dp.get_precision('Product Unit of Measure'),
                              help="Technical field: for not loosing the price used for the bid, which can be generally "

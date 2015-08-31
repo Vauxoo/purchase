@@ -179,12 +179,10 @@ class purchase_order_line(models.Model):
     @api.one
     @api.depends()
     def _get_prices(self):
-        """
+        """Get the values computed for prices
         :return:
         """
-        # If it was not forced to be only one.
         ils = self.get_last_inv_line()
-        print ils
         self.last_invoice_id = ils and ils[0][0] or False
         self.last_price = ils and ils[0][1] or 0.00
         self.accounting_cost = self.product_id.standard_price

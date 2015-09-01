@@ -45,9 +45,9 @@
     "test": [],
     "qweb": [
         'static/xml/console.xml',
+        'static/xml/web_widget_one2many_console.xml',
     ],
     "js": [
-        'static/js/console.js',
     ],
     "css": [
         'static/css/console.css',

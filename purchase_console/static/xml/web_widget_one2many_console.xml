@@ -1,0 +1,19 @@
+<templates>
+    <t t-name="FieldOne2ManyConsole">
+        <div t-att-class="widget.widget_class">
+            <div class="row">
+                <span class="badge"><t t-esc="widget.get('value').length"/></span>
+            </div>
+            <div class="row">
+                <table class="table table-condensed table-responsive table-hover field_console">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+</templates>

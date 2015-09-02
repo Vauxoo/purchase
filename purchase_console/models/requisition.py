@@ -220,3 +220,17 @@ class purchase_order_line(models.Model):
     # def generate_po(self, cr, uid, tender_id, context=None):
     #     #call generate_po from tender with active_id. Called from js widget
     #     return self.pool.get('purchase.requisition').generate_po(cr, uid, [tender_id], context=context)
+
+class PurchaseRequisitionLine(models.Model):
+    _inherit = "purchase.requisition.line"
+
+
+    @api.multi
+    def _get_po_line(self):
+        for req in self:
+            po_line_ids = req.requisition_id.po_line_ids.ids
+            req.po_line_ids = req.env['purchase.order.line'].search([('id', 'in', po_line_ids),
+                                                                    ('product_id', '=', req.product_id.id)]).ids
+    po_line_ids = fields.One2many('purchase.order.line',
+                                  help="Technical field: the purchase orders lines related to a line.",
+                                  compute="_get_po_line")

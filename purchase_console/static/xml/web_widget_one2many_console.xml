@@ -16,4 +16,13 @@
             </div>
         </div>
     </t>
+    <t t-name="FieldOne2ManyTdMany2One">
+        <p><t t-esc="content"/></p>
+    </t>
+    <t t-name="FieldOne2ManyTdOne2Many">
+        <p><t t-esc="content"/></p>
+    </t>
+    <t t-name="FieldOne2ManyTdText">
+        <p><t t-esc="content"/></p>
+    </t>
 </templates>

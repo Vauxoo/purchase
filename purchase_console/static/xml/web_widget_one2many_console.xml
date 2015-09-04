@@ -1,4 +1,40 @@
 <templates>
+    <t t-name="purchase_console.one2many_child_tree" t-extend="ListView">
+        <t t-jquery="thead.ui-widget-header > tr:first">
+            this.removeAttr('t-if');
+        </t>
+
+        <t t-jquery="td.oe-actions">
+            this.removeAttr('t-if');
+        </t>
+        <t t-jquery="td.oe-actions" t-operation="prepend">
+            <h3 class="oe_view_title"><t t-esc="fields_view.arch.attrs.string"/></h3>
+        </t>
+    </t>
+    <!--<tr t-name="ListView.row"-->
+            <!--t-att-data-id="record.get('id')"-->
+            <!--t-att-style="view.style_for(record)">-->
+        <!--<t t-set="asData" t-value="record.toForm().data"/>-->
+        <!--<t t-foreach="columns" t-as="column">-->
+            <!--<td t-if="column.meta"> </td>-->
+        <!--</t>-->
+        <!--<th t-if="options.selectable" class="oe_list_record_selector" width="1">-->
+            <!--<t t-set="checked" t-value="options.select_view_id == record.get('id') ? 'checked' : null"/>-->
+            <!--<input t-if="options.radio" type="radio" name="radiogroup" t-att-checked="checked"/>-->
+            <!--<input t-if="!options.radio" type="checkbox" name="radiogroup" t-att-checked="checked"/>-->
+        <!--</th>-->
+        <!--<t t-foreach="columns" t-as="column">-->
+            <!--<t t-set="number" t-value="column.type === 'integer' or column.type == 'float'"/>-->
+            <!--<t t-set="modifiers" t-value="column.modifiers_for(asData)"/>-->
+            <!--<td t-if="!column.meta and column.invisible !== '1'" t-att-title="column.help"-->
+                <!--t-attf-class="oe_list_field_cell oe_list_field_#{column.widget or column.type} #{number ? 'oe_number' : ''} #{column.tag === 'button' ? 'oe-button' : ''} #{modifiers.readonly ? 'oe_readonly' : ''} #{modifiers.required ? 'oe_required' : ''}"-->
+                <!--t-att-data-field="column.id"-->
+                <!--><t t-if="column.type!='one2many'" t-raw="render_cell(record, column)"/></td>-->
+        <!--</t>-->
+        <!--<td t-if="options.deletable" class='oe_list_record_delete' width="13px">-->
+            <!--<button type="button" name="delete" class="oe_i">d</button>-->
+        <!--</td>-->
+    <!--</tr>-->
     <t t-name="FieldOne2ManyConsole">
         <div t-att-class="widget.widget_class">
             <div class="row">
@@ -16,13 +52,24 @@
             </div>
         </div>
     </t>
-    <t t-name="FieldOne2ManyTdMany2One">
-        <p><t t-esc="content"/></p>
+    <t t-name="purchase_console.FieldOne2ManyTdOne2Many">
+        <tr>
+            <td t-att-colspan="colspan">
+                <p><t t-esc="content"/></p>
+            </td>
+        </tr>
     </t>
-    <t t-name="FieldOne2ManyTdOne2Many">
-        <p><t t-esc="content"/></p>
-    </t>
-    <t t-name="FieldOne2ManyTdText">
-        <p><t t-esc="content"/></p>
+    <t t-name="purchase_console.PlusButton">
+        <span>
+            <a t-att-href="'#collapse' + elem['id']"
+               role="button"
+               aria-expanded="false"
+               t-att-aria-controls="'#collapse' + elem['id']"
+               data-toggle="collapse"
+               class="btn btn-link">
+                <i class="fa fa-plus-circle"></i>
+                <t t-esc="elem[key].length"/>
+            </a>
+        </span>
     </t>
 </templates>

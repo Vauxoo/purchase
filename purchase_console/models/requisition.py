@@ -207,6 +207,11 @@ class purchase_order_line(models.Model):
                                            "this supplier  or simply the last invoice the one with the littlest price.",
                                       compute="_get_prices")
 
+    @api.one
+    def select_this(self):
+        print "Selected PoLine"
+
+
     # def action_draft(self, cr, uid, ids, context=None):
     #     self.write(cr, uid, ids, {'state': 'draft'}, context=context)
     #
@@ -231,6 +236,7 @@ class PurchaseRequisitionLine(models.Model):
             po_line_ids = req.requisition_id.po_line_ids.ids
             req.po_line_ids = req.env['purchase.order.line'].search([('id', 'in', po_line_ids),
                                                                     ('product_id', '=', req.product_id.id)]).ids
+
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders lines related to a line.",
                                   compute="_get_po_line")

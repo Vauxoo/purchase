@@ -2,20 +2,22 @@
     <t t-name="ListView.row.one2many_columns">
         <t t-set="ele" t-value="widget.elements"/>
         <t t-foreach="widget.elements.length" t-as="index">
-           <ul class="list-group">
-              <li class="list-group-item">
-                  <t t-esc="ele[index].partner_id[1]"></t>
-              </li>
-              <li class="list-group-item">
-                  <t t-esc="Math.round(ele[index].price_bid, -2)"></t>
-              </li>
-              <li class="list-group-item">
-                  <t t-esc="Math.round(ele[index].last_price, -2)"></t>
-              </li>
-              <li class="list-group-item">
-                  <t t-esc="Math.round(ele[index].price_unit, -2)"></t>
-              </li>
-           </ul>
+            <div t-att-style="'width: ' + (Math.round(100/widget.elements.length)-1)  + '%; ' + 'display: inline-block; text-align: center; z-index: 1000;'">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <h4 class="list-group-item-heading"><span><t t-esc="ele[index].partner_id[1]"></t> <a href="#"><i class="fa fa-question"></i></a></span></h4>
+                    </li>
+                    <li class="list-group-item">
+                        <span><t t-esc="Math.round(ele[index].price_bid, -2)"></t> <a title="Technical field: for not loosing the price used for the bid, which can be generally a little percentage less than the actual computed one." href="#"><i class="fa fa-question"></i></a></span>
+                    </li>
+                    <li class="list-group-item">
+                        <span><t t-esc="Math.round(ele[index].last_price, -2)"></t> <a title="Technical field: It will represent the more little one between the last purchase to this supplier and the last purchase actually done. If never bought to this supplier this will be the same than the last one, if never bought at all this will be 0" href="#"><i class="fa fa-question"></i></a></span>
+                    </li>
+                    <li class="list-group-item">
+                        <span><t t-esc="Math.round(ele[index].price_unit, -2)"></t> <a title="The price in the purchase order (the one to be used one time the purchase order is confirmed) generally the one in the product." href="#"><i class="fa fa-question"></i></a></span>
+                    </li>
+                </ul>
+            </div>
         </t>
     </t>
     <t role="group" aria-label="..." t-name="ListView.row.one2many_columns_place">

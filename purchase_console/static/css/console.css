@@ -13,3 +13,6 @@ Autohide left menu section.
 .openerp .oe_secondary_menu_section {white-space:nowrap;}
 /******************/
 .openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns {white-space: unset !important;}
+.openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns .list-group {margin-bottom: 0px}
+.openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns .list-group .list-group-item {padding: 3px 3px 2px 2px}
+.openerp .oe_list_editable .oe_list_content td.oe_list_field_one2many_columns {padding: 0 0 0 0 !important;}

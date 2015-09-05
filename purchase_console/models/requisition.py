@@ -240,3 +240,6 @@ class PurchaseRequisitionLine(models.Model):
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders lines related to a line.",
                                   compute="_get_po_line")
+    #TODO: Put this in the stock_forecast module.
+    forecast_qty = fields.Float('Projected Qty', readonly=True,
+                                help="Technical field: The quantity projected with the forecast module by any mean.")

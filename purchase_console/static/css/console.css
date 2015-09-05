@@ -12,3 +12,4 @@ Autohide left menu section.
 .openerp .oe_secondary_submenu .oe_menu_text { overflow:visible; }
 .openerp .oe_secondary_menu_section {white-space:nowrap;}
 /******************/
+.openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns {white-space: unset !important;}

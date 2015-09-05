@@ -30,29 +30,11 @@
                                         <tree string="Products" editable="bottom">
                                             <field name="product_id"
                                                    on_change="onchange_product_id(product_id,product_uom_id,parent.account_analytic_id,account_analytic_id,parent.schedule_date,schedule_date)"/>
-                                            <field name="po_line_ids">
-                                                <tree>
-                                                    <button name="select_this" string="Select This" icon="gtk-ok"
-                                                            help="Pick this Po line" type="object"/>
-                                                    <field name="order_id" readonly="1"/>
-                                                    <field name="name" readonly="1"/>
-                                                    <field name="last_price" readonly="1"/>
-                                                    <field name="price_bid" readonly="1"/>
-                                                    <field name="accounting_cost" readonly="1"/>
-                                                </tree>
-                                                <form>
-                                                    <button name="select_this" string="Select This" icon="gtk-ok"
-                                                            help="Pick this Po line" type="object"/>
-                                                    <field name="order_id" readonly="1"/>
-                                                    <field name="name" readonly="1"/>
-                                                    <field name="last_price" readonly="1"/>
-                                                    <field name="price_bid" readonly="1"/>
-                                                    <field name="accounting_cost" readonly="1"/>
-                                                </form>
-                                            </field>
                                             <field name="product_uom_id" groups="product.group_uom"/>
+                                            <field name="product_qty"/>
                                             <field name="schedule_date"/>
                                             <field name="account_analytic_id" groups="purchase.group_analytic_accounting"/>
+                                            <field name="po_line_ids" widget="one2many_columns"/>
                                         </tree>
                                     </field>
                                 </page>

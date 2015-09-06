@@ -5,8 +5,9 @@ Autohide left menu section.
 .openerp .oe_leftbar:hover a.oe_logo img { width:200px; transition: .25s ease-in-out .5s; }
 .openerp .oe_leftbar, .openerp .oe_leftbar > div {width:50px; transition: 1s ease-in-out 1s;}
 .openerp .oe_leftbar:hover, .openerp .oe_leftbar:hover > div {width:200px; transition: .25s ease-in-out .5s; }
-.openerp .oe_leftbar .oe_secondary_menus_container, .openerp .oe_leftbar > div > div > div > div.oe_secondary_menus_container
-{width:50px; overflow: hidden; background-color: #bbf; transition: 1s ease-in-out 1s;}
+.openerp .oe_leftbar .oe_secondary_menus_container,
+.openerp .oe_leftbar > div > div > div > div.oe_secondary_menus_container
+{width:50px; overflow: hidden; transition: 1s ease-in-out 1s;}
 .openerp .oe_leftbar:hover .oe_secondary_menus_container
 {width:200px; overflow: auto; background-color: initial; transition: .25s ease-in-out .5s;}
 .openerp .oe_secondary_submenu .oe_menu_text { overflow:visible; }

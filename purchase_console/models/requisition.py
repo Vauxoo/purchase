@@ -59,6 +59,7 @@ class PurchaseRequisition(models.Model):
             if not supplier.id in supplier_on_orders_ids:
                 self.make_purchase_order(supplier.id)
 
+    see_left_column = fields.Boolean('Hide/Show Left Column')
     supplier_ids = fields.Many2many('res.partner', compute="_get_partners_related", string='Suppliers Involved',
                                      track_visibility='always', copy=False, inverse='_create_po_given_partner')
     line_ids = fields.One2many('purchase.requisition.line',
@@ -229,6 +230,21 @@ class purchase_order_line(models.Model):
 class PurchaseRequisitionLine(models.Model):
     _inherit = "purchase.requisition.line"
 
+    def _get_consolidated_price(self, req):
+        return 1234.5
+
+    @api.multi
+    def _get_line_fields(self):
+        for req in self:
+            req.consolidated_price = self._get_consolidated_price(req)
+
+    def get_time_stock(self, req):
+        return "3 weeks"
+
+    @api.multi
+    def _get_time_stock_to(self):
+        for req in self:
+            req.stock_to = self.get_time_stock(req)
 
     @api.multi
     def _get_po_line(self):
@@ -240,6 +256,17 @@ class PurchaseRequisitionLine(models.Model):
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders lines related to a line.",
                                   compute="_get_po_line")
+    consolidated_price = fields.Float(help="Technical field: The cost price including the landing costs for supplier "
+                                           "in order to have a comparative price including all the impacts of logistic "
+                                           "for example: Landing costs, Time to arrival, accounting impacts, other "
+                                           "expenses.",
+                                      compute="_get_line_fields")
     #TODO: Put this in the stock_forecast module.
     forecast_qty = fields.Float('Projected Qty', readonly=True,
                                 help="Technical field: The quantity projected with the forecast module by any mean.")
+    stock = fields.Float(readonly=True,
+                         help="Technical field: Stock when the forecast was computed, necessary to know if you really "
+                              "can live with stock actual or not.")
+    stock_to = fields.Char(readonly=True,
+                           help="Technical field: How much time do you have of stock. ",
+                           compute="_get_time_stock_to")

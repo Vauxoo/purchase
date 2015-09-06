@@ -15,46 +15,60 @@
             <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header/button" position="before">
-                    <button name="%(purchase_console.action_console)d" string="Console" type="action" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//sheet" position="replace">
                     <!-- Dear future me: container here because the chatter widget without this
                     will not render properly -->
                     <div class="container console" style="width: 100%">
-                        <div class="col-md-4 col-lg-3">
-                            <button name="open_product_line" type="object" string="View Products Lines" class="oe_stat_button"
-                                attrs="{'invisible': ['|', ('state', 'not in', ('open','done')), ('exclusive', '=', 'exclusive')]}" groups="purchase.group_advance_bidding"/>
-                            <button name="procure_products_from_suppliers" string="Procure" type="object"
-                                    help="Procure product up today, if partners is empty then we will procure all products which need inventory If partner selected then only products which this partner can sell will be procured."
-                                    class="oe_stat_button"/>
-                            <button name="%(purchase_requisition.action_purchase_requisition_partner)d" type="action"
-                                string="Request a Quotation" icon="gtk-execute"
-                                attrs="{'invisible': ['|', ('line_ids','=',[]),('state', 'in', ('draft' ,'open','done'))]}"/>
-                            <button name="open_rfq" type="object" string="View RFQs/Bids" attrs="{'invisible': [('state', 'in', ('draft'))]}"/>
-                            <group string="0.- Options">
-                                <field name="exclusive" string="Exclusive" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="multiple_rfq_per_supplier" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                            </group>
-                            <group string="1.- Basic Information">
-                                <field name="supplier_ids" widget="many2many_tags"/>
-                                <field name="advantage_discount"/>
-                            </group>
-                            <group string="3.- Logistic Information">
-                                <field name="origin" placeholder="e.g. OP0025" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="date_end" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="ordering_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="schedule_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="picking_type_id" widget="selection" groups="stock.group_locations" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="company_id" groups="base.group_multi_company" widget="selection" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                            </group>
-                            <group string="4.- General Info">
-                                <field name="name" string="Code" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="user_id" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'purchase_requisition.group_purchase_requisition_user', 'purchase.group_purchase_user', 'account.group_account_invoice']}" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="account_analytic_id" colspan="2" groups="purchase.group_analytic_accounting" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                            </group>
-                        </div>
-                        <div class="col-md-8 col-lg-9">
+                        <div class="oe_right_space">
                             <notebook>
+                                <page string="General Information">
+                                    <div class="oe_left_space">
+                                        <div class="oe_right oe_button_box">
+                                            <button name="procure_products_from_suppliers" string="Procure" type="object"
+                                                    help="Procure product up today, if partners is empty then we will procure all products which need inventory If partner selected then only products which this partner can sell will be procured."
+                                                    class="oe_stat_button"
+                                                    icon="fa-gears"/>
+                                            <button name="%(purchase_requisition.action_purchase_requisition_partner)d" type="action"
+                                                    string="Request a Quotation"
+                                                    attrs="{'invisible': ['|', ('line_ids','=',[]),('state', 'in', ('draft' ,'open','done'))]}"
+                                                    class="oe_stat_button"
+                                                    icon="fa-gear"/>
+                                            <button name="open_product_line" type="object"
+                                                    string="View Products Lines"
+                                                    attrs="{'invisible': ['|', ('state', 'not in', ('open','done')), ('exclusive', '=', 'exclusive')]}"
+                                                    class="oe_stat_button"
+                                                    icon="fa-align-justify"
+                                                    groups="purchase.group_advance_bidding"/>
+                                            <button name="open_rfq" type="object"
+                                                    string="View RFQs/Bids"
+                                                    attrs="{'invisible': [('state', 'in', ('draft'))]}"
+                                                    class="oe_stat_button"
+                                                    icon="fa-align-justify"/>
+                                        </div>
+                                        <group string="0.- Options">
+                                            <field name="exclusive" string="Exclusive" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="multiple_rfq_per_supplier" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                        </group>
+                                        <group string="1.- Basic Information">
+                                            <field name="supplier_ids" widget="many2many_tags"/>
+                                            <field name="advantage_discount"/>
+                                        </group>
+                                        <group string="3.- Logistic Information">
+                                            <field name="origin" placeholder="e.g. OP0025" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="date_end" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="ordering_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="schedule_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="picking_type_id" widget="selection" groups="stock.group_locations" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="company_id" groups="base.group_multi_company" widget="selection" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                        </group>
+                                        <group string="4.- General Info">
+                                            <field name="name" string="Code" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="user_id" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'purchase_requisition.group_purchase_requisition_user', 'purchase.group_purchase_user', 'account.group_account_invoice']}" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            <field name="account_analytic_id" colspan="2" groups="purchase.group_analytic_accounting" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                        </group>
+                                    </div>
+                                </page>
                                 <page string="Console">
                                     <field name="line_ids" group_line="po_line_ids"
                                            attrs="{'readonly': [('state','not in',('draft'))]}"
@@ -64,7 +78,10 @@
                                                    on_change="onchange_product_id(product_id,product_uom_id,parent.account_analytic_id,account_analytic_id,parent.schedule_date,schedule_date)"/>
                                             <field name="product_uom_id" groups="product.group_uom"/>
                                             <field name="product_qty"/>
+                                            <field name="stock"/>
                                             <field name="forecast_qty"/>
+                                            <field name="stock_to"/>
+                                            <field name="consolidated_price"/>
                                             <field name="schedule_date"/>
                                             <field name="account_analytic_id" groups="purchase.group_analytic_accounting"/>
                                             <field name="po_line_ids" widget="one2many_columns"/>

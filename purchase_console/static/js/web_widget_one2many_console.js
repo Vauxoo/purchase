@@ -59,7 +59,7 @@ openerp.purchase_console = function(instance) {
                         });
                     });
                     promise = $.when(self.dataset).then( function(){
-                        content = instance.web.qweb.render('ListView.row.one2many_columns', {widget: self});
+                        content = instance.web.qweb.render('ListView.row.one2many_columns', {widget: self, partners: self.partners});
 
                         $('.' + self.name + '_' + row_data.id.value).html(content);
 

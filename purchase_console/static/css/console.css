@@ -17,3 +17,8 @@ Autohide left menu section.
 .openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns .list-group {margin-bottom: 0px}
 .openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns .list-group .list-group-item {padding: 3px 3px 2px 2px}
 .openerp .oe_list_editable .oe_list_content td.oe_list_field_one2many_columns {padding: 0 0 0 0 !important;}
+/*
+Sppecial Header
+*/
+.openerp .oe_list_content td, .openerp .oe_list_content th.oe_list_header_one2many_columns {padding: 0 0 0 0; line-height: 16px}
+.openerp .oe_list_header_one2many_columns div {margin-bottom: 0px; text-align: center}

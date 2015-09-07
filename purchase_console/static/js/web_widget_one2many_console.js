@@ -4,6 +4,26 @@ openerp.purchase_console = function(instance) {
     var QWeb = instance.web.qweb;
 
     instance.web.list.One2manyColumns = instance.web.list.Column.extend({
+        init: function (id, tag, attrs) {
+            //console.log('On My widget ...... id, tag, attrs');
+            //console.log(id);
+            //console.log(tag);
+            //console.log(attrs);
+            _.extend(attrs, {
+                id: id,
+                tag: tag,
+                string: '',
+            });
+
+            this.modifiers = attrs.modifiers ? JSON.parse(attrs.modifiers) : {};
+            delete attrs.modifiers;
+            _.extend(this, attrs);
+
+            if (this.modifiers['tree_invisible']) {
+                this.invisible = '1';
+            } else { delete this.invisible; }
+        },
+
         format: function (row_data, options) {
             var self = this;
             if (!row_data[this.id] || !row_data[this.id].value) {
@@ -18,14 +38,33 @@ openerp.purchase_console = function(instance) {
                 self.elements = [];
                 self.placeholder = instance.web.qweb.render('ListView.row.one2many_columns_place',
                                                 {widget: self, record: row_data});
+                self.partners = [];
                 self.dataset = new instance.web.Model(self.relation)
                     .call('read', [value, fields, self.context]).done(function (datas) {
-                        self.elements = datas
-
+                        self.elements = datas;
+                    }).done(function(datas){
+                        //Set the header
+                        //TODO: fix the ugly hack using partners directly
+                        _.each(self.elements, function(ele){
+                            var self_each = this;
+                            self_each.is_there=false;
+                            _.each(self.partners, function(partner){
+                                if (partner[0] == ele.partner_id[0]) {
+                                    self_each.is_there = true;
+                                }
+                            });
+                            if (!self_each.is_there){
+                                self.partners.push(ele.partner_id);
+                            }
+                        });
                     });
                     promise = $.when(self.dataset).then( function(){
                         content = instance.web.qweb.render('ListView.row.one2many_columns', {widget: self});
+
                         $('.' + self.name + '_' + row_data.id.value).html(content);
+
+                        header = instance.web.qweb.render('ListView.row.one2many_headers', {partners: self.partners});
+                        $("th[data-id='po_line_ids'] div").html(header);
                     });
 
                 return self.placeholder

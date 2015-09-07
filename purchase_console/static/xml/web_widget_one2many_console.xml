@@ -1,10 +1,16 @@
 <templates>
+    <t t-name="ListView.row.one2many_headers">
+        <t t-foreach="partners" t-as="partner">
+            <t t-log="partner"/>
+            <div t-att-style="'width: ' + (Math.round(100/partners.length)-1)  + '%; float: left'"><t t-esc="partner[1]"></t></div>
+        </t>
+    </t>
     <t t-name="ListView.row.one2many_columns">
         <t t-set="ele" t-value="widget.elements"/>
-        <t t-foreach="widget.elements.length" t-as="index">
+        <t t-foreach="widget.length" t-as="index">
             <div t-att-style="'width: ' + (Math.round(100/widget.elements.length)-1)  + '%; ' + 'display: inline-block; text-align: center; z-index: 1000;'">
                 <table class="table">
-                    <thead>
+                    <thead t-att-title="widget.elements[index].partner_id[1]" t-att-data-partner-id="widget.elements[index].partner_id[0]">
                         <tr>
                             <th>Date</th>
                             <th colspan="2">10/05/2015</th>

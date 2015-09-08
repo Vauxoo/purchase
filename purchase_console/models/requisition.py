@@ -256,13 +256,14 @@ class PurchaseRequisitionLine(models.Model):
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders lines related to a line.",
                                   compute="_get_po_line")
-    consolidated_price = fields.Float(help="Technical field: The cost price including the landing costs for supplier "
+    consolidated_price = fields.Float(string="Consolidated",
+                                      help="Technical field: The cost price including the landing costs for supplier "
                                            "in order to have a comparative price including all the impacts of logistic "
                                            "for example: Landing costs, Time to arrival, accounting impacts, other "
                                            "expenses.",
                                       compute="_get_line_fields")
     #TODO: Put this in the stock_forecast module.
-    forecast_qty = fields.Float('Projected Qty', readonly=True,
+    forecast_qty = fields.Float('Proj. Qty', readonly=True,
                                 help="Technical field: The quantity projected with the forecast module by any mean.")
     stock = fields.Float(readonly=True,
                          help="Technical field: Stock when the forecast was computed, necessary to know if you really "

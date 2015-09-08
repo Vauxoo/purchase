@@ -1,60 +1,39 @@
 <templates>
     <t t-name="ListView.row.one2many_headers">
         <t t-foreach="partners" t-as="partner">
-            <t t-log="partner"/>
-            <div t-att-style="'width: ' + (Math.round(100/partners.length - 0.5))  + '%; float: left'"><t t-esc="partner[1]"></t></div>
+            <div t-att-style="'width: ' + (Math.round(100/partners.length - 0.5))  + '%; float: left'">
+                <div class="row-title">
+                    <div class="header-title1 text-center"><t t-esc="partner[1]"></t></div>
+                </div>
+                <div class="row-title">
+                    <div class="header-title2">Date</div>
+                    <div class="header-title2">10/05/2015</div>
+                    <div class="header-title2">Factor</div>
+                    <div class="header-title2">21%</div>
+                </div>
+                <div class="row-title">
+                    <div class="header-title3">Qty</div>
+                    <div class="header-title3">Last</div>
+                    <div class="header-title3">Cost</div>
+                    <div class="header-title3">Proposed</div>
+                    <div class="header-title3">Landed</div>
+                </div>
+            </div>
         </t>
     </t>
     <t t-name="ListView.row.one2many_columns">
-        <t t-set="ele" t-value="widget.elements"/>
         <t t-foreach="widget.elements.length" t-as="index">
             <div t-att-style="'width: ' + (Math.round(100/partners.length - 0.5))  + '%; ' + 'float: left; text-align: center; z-index: 1000;'">
-                <table class="table table-hover table-bordered" t-att-data-partner-id="widget.elements[index].partner_id[0]">
-                    <thead t-att-title="widget.elements[index].partner_id[1]">
-                        <tr>
-                            <th>Date</th>
-                            <th colspan="2">10/05/2015</th>
-                            <th>Factor</th>
-                            <th>21%</th>
-                        </tr>
-                        <tr>
-                            <td>Qty</td>
-                            <td>Last</td>
-                            <td>Cost</td>
-                            <td>Proposed</td>
-                            <td>Landed</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>10</td>
-                            <td>1293.00</td>
-                            <td>1294.00</td>
-                            <td>1200</td>
-                            <td>1302</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="row-title">
+                    <div class="header-title3">10</div>
+                    <div class="header-title3">1293.00</div>
+                    <div class="header-title3">1294.00</div>
+                    <div class="header-title3">1200</div>
+                    <div class="header-title3">1302</div>
+                </div>
             </div>
         </t>
     </t>
-    <!--
-        <t t-foreach="widget.elements.length" t-as="index">
-            <div t-att-style="'width: ' + (Math.round(100/widget.elements.length)-1)  + '%; ' + 'display: inline-block; text-align: center; z-index: 1000;'">
-                <ul class="list-group">
-                    <li class="list-group-item" t-att-title="ele[index].partner_id[1]">
-                        <span><t t-esc="Math.round(ele[index].price_bid, -2)"></t> <a title="Technical field: for not loosing the price used for the bid, which can be generally a little percentage less than the actual computed one." href="#"><i class="fa fa-question"></i></a></span>
-                    </li>
-                    <li class="list-group-item">
-                        <span><t t-esc="Math.round(ele[index].last_price, -2)"></t> <a title="Technical field: It will represent the more little one between the last purchase to this supplier and the last purchase actually done. If never bought to this supplier this will be the same than the last one, if never bought at all this will be 0" href="#"><i class="fa fa-question"></i></a></span>
-                    </li>
-                    <li class="list-group-item">
-                        <span><t t-esc="Math.round(ele[index].price_unit, -2)"></t> <a title="The price in the purchase order (the one to be used one time the purchase order is confirmed) generally the one in the product." href="#"><i class="fa fa-question"></i></a></span>
-                    </li>
-                </ul>
-            </div>
-        </t>
-        -->
     <t role="group" aria-label="..." t-name="ListView.row.one2many_columns_place">
         <div  t-att-class="widget.name + '_' + record.id.value">
         </div>

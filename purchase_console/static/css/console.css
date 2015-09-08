@@ -12,18 +12,38 @@ Autohide left menu section.
 {width:200px; overflow: auto; background-color: initial; transition: .25s ease-in-out .5s;}
 .openerp .oe_secondary_submenu .oe_menu_text { overflow:visible; }
 .openerp .oe_secondary_menu_section {white-space:nowrap;}
-/******************/
-.openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns {white-space: unset !important;}
-.openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns .list-group {margin-bottom: 0px}
-.openerp .oe_list_content > tbody > tr > td.oe_list_field_one2many_columns .list-group .list-group-item {padding: 3px 3px 2px 2px}
-.openerp .oe_list_editable .oe_list_content td.oe_list_field_one2many_columns {padding: 0 0 0 0 !important;}
-.openerp .oe_list_editable .oe_list_content td.oe_list_field_one2many_columns > :first-child {border-left: 4px solid}
 /*
-Sppecial Header
-*/
+ * End of auto hide left menu.
+ */
+
+/*
+ *Configuring header
+ */
+
+/* Width simulating col-md
+ */
+.openerp .oe_list_header_one2many_columns  div[class^='header-title'],
+.openerp .oe_list_field_one2many_columns  div[class^='header-title'] {float: left; white-space: nowrap; overflow: hidden; padding:3px 6px; line-height: 16px}
+.openerp .oe_list_header_one2many_columns .header-title1,
+.openerp .oe_list_field_one2many_columns .header-title1 {width: 99%; white-space: unset !important;}
+.openerp .oe_list_header_one2many_columns .header-title2,
+.openerp .oe_list_field_one2many_columns .header-title2 {width: 24%; white-space: unset !important;}
+.openerp .oe_list_header_one2many_columns .header-title3,
+.openerp .oe_list_field_one2many_columns .header-title3 {width: 19%;  white-space: unset !important;}
+.openerp .oe_list_header_one2many_columns .row-title {white-space: unset !important;}
+.openerp td.oe_list_field_one2many_columns,
+.openerp .oe_list_field_one2many_columns .row-title,
+.openerp .oe_list_field_one2many_columns  div[class^='po_line_ids_'],
+.openerp .oe_list_field_one2many_columns  div[class^='po_line_ids_'] div {white-space: unset !important;}
+
+/*
 .openerp .oe_list_content td, .openerp .oe_list_content th.oe_list_header_one2many_columns {padding:3px 6px; line-height: 16px}
 .openerp .oe_list_header_one2many_columns div {margin-bottom: 0px; text-align: center}
+.openerp .oe_list_header_one2many_columns .table {margin-bottom: 0px; text-align: center}
 .openerp td.oe_list_field_one2many_columns:first-child {border-left: 4px solid}
 .openerp td.oe_list_field_one2many_columns .table {margin-bottom: 0px; text-align: center; border-right: 4px solid}
 .openerp td.oe_list_field_one2many_columns .table td,
 .openerp td.oe_list_field_one2many_columns .table td {text-align: center}
+.openerp .oe_list_header_one2many_columns .row-title {margin-bottom: 0px; padding-bottom: 0px}
+
+*/

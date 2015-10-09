@@ -12,7 +12,6 @@ openerp.purchase_console = function(instance) {
             _.extend(attrs, {
                 id: id,
                 tag: tag,
-                string: '',
             });
 
             this.modifiers = attrs.modifiers ? JSON.parse(attrs.modifiers) : {};
@@ -59,11 +58,11 @@ openerp.purchase_console = function(instance) {
                         });
                     });
                     promise = $.when(self.dataset).then( function(){
+                        //TODO: Resolver como precrear columnas vacías de partners.
                         content = instance.web.qweb.render('ListView.row.one2many_columns', {widget: self, partners: self.partners});
-                        console.log($('.' + self.name + '_' + row_data.id.value));
                         $('.' + self.name + '_' + row_data.id.value).html(content);
                         header = instance.web.qweb.render('ListView.row.one2many_headers', {partners: self.partners});
-                        $("th[data-id='po_line_ids'] div").html(header);
+                        $("th[data-id='po_line_ids']").html(header);
                     });
 
                 return self.placeholder

@@ -1,35 +1,24 @@
 <templates>
     <t t-name="ListView.row.one2many_headers">
         <t t-foreach="partners" t-as="partner">
-            <div t-att-style="'width: ' + (Math.round(100/partners.length - 0.5))  + '%; float: left'">
-                <div class="row-title">
-                    <div class="header-title1 text-center"><t t-esc="partner[1]"></t></div>
-                </div>
-                <div class="row-title">
-                    <div class="header-title2">Date</div>
-                    <div class="header-title2">10/05/2015</div>
-                    <div class="header-title2">Factor</div>
-                    <div class="header-title2">21%</div>
-                </div>
-                <div class="row-title">
-                    <div class="header-title3">Qty</div>
-                    <div class="header-title3">Last</div>
-                    <div class="header-title3">Cost</div>
-                    <div class="header-title3">Proposed</div>
-                    <div class="header-title3">Landed</div>
-                </div>
+            <div t-att-style="'width: ' + (Math.round(100/partners.length - 0.5))  + '%; float: left'" class="text-center">
+                <span><h3 class="header-title1 text-center"><t t-esc="partner[1]"></t></h3></span>
+                <span class="header-title5 text-right">Date:</span> <span class="header-title5">10/05/2015</span><br/>
+                <span class="header-title5 text-right">Factor:</span> <span class="header-title5">21%</span>
             </div>
         </t>
     </t>
     <t t-name="ListView.row.one2many_columns">
         <t t-foreach="widget.elements.length" t-as="index">
-            <div t-att-style="'width: ' + (Math.round(100/partners.length - 0.5))  + '%; ' + 'float: left; text-align: center; z-index: 1000;'">
-                <div class="row-title">
-                    <div class="header-title3">10</div>
-                    <div class="header-title3">1293.00</div>
-                    <div class="header-title3">1294.00</div>
-                    <div class="header-title3">1200</div>
-                    <div class="header-title3">1302</div>
+
+            <div t-att-style="'width: ' + (Math.round(100/widget.elements.length - 0.5))  + '%; ' + 'float: left; text-align: center; z-index: 1000;'">
+                <t t-log="widget.partners"/>
+                <div t-att-title="widget.elements[index].partner_id[1]">
+                    <div class="row">10</div>
+                    <div class="row">1293.00</div>
+                    <div class="row">1294.00</div>
+                    <div class="row">1200</div>
+                    <div class="row-last">1302</div>
                 </div>
             </div>
         </t>

@@ -23,18 +23,22 @@ Autohide left menu section.
 /* Width simulating col-md
  */
 .openerp .oe_list_header_one2many_columns  div[class^='header-title'],
-.openerp .oe_list_field_one2many_columns  div[class^='header-title'] {float: left; white-space: nowrap; overflow: hidden; padding:3px 6px; line-height: 16px}
+.openerp .oe_list_field_one2many_columns  div[class^='header-title'] {float: left; white-space: nowrap; overflow: hidden; font-size: 12px; line-height: 14px}
+.openerp .oe_list_header_one2many_columns .header-title5,
+.openerp .oe_list_field_one2many_columns .header-title5 {width: 50%;}
 .openerp .oe_list_header_one2many_columns .header-title1,
 .openerp .oe_list_field_one2many_columns .header-title1 {width: 99%;}
 .openerp .oe_list_header_one2many_columns .header-title2,
 .openerp .oe_list_field_one2many_columns .header-title2 {width: 24%;}
 .openerp .oe_list_header_one2many_columns .header-title3,
-.openerp .oe_list_field_one2many_columns .header-title3 {width: 19%;}
+.openerp .oe_list_field_one2many_columns .header-title3 {width: 19%; border-right: 1px black solid;}
 .openerp .oe_list_header_one2many_columns .row-title {}
 .openerp td.oe_list_field_one2many_columns,
 .openerp td.oe_list_field_one2many_columns .row-title,
 .openerp td.oe_list_field_one2many_columns  div[class^='po_line_ids_'],
 .openerp td.oe_list_field_one2many_columns  div[class^='po_line_ids_'] div {white-space: unset !important;}
+.openerp td.oe_list_field_one2many_columns .row {border-bottom: 1px dashed black}
+.openerp td.oe_list_field_one2many_columns .row-last {border-bottom: none}
 
 /*
 .openerp .oe_list_content td, .openerp .oe_list_content th.oe_list_header_one2many_columns {padding:3px 6px; line-height: 16px}

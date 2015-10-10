@@ -251,7 +251,7 @@ class PurchaseRequisitionLine(models.Model):
         for req in self:
             po_line_ids = req.requisition_id.po_line_ids.ids
             req.po_line_ids = req.env['purchase.order.line'].search([('id', 'in', po_line_ids),
-                                                                    ('product_id', '=', req.product_id.id)]).ids
+                                                                    ('product_id', '=', req.product_id.id)])
 
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders lines related to a line.",

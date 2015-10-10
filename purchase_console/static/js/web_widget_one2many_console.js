@@ -31,7 +31,7 @@ openerp.purchase_console = function(instance) {
             var value = row_data[this.id].value;
             if (this.type === 'one2many') {
                 //Ugly should it be dynamic?
-                var fields = ['name', 'last_price', 'price_unit',
+                var fields = ['name', 'last_price', 'price_unit', 'product_qty',
                     'price_bid', 'accounting_cost', 'last_invoice_id', 'partner_id'];
                 // temp empty value
                 self.elements = [];

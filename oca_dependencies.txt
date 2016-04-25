@@ -1,0 +1,3 @@
+forecast https://github.com/Vauxoo/forecast.git
+web https://github.com/Vauxoo/web.git
+

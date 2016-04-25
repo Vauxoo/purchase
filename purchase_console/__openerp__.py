@@ -18,12 +18,13 @@
     "website": "http://www.vauxoo.com/",
     "category": "",
     "depends": [
-        "board", # Just because we need some graphic stuff from here
+        "board",  # Just because we need some graphic stuff from here
         "purchase_requisition",  # To have this concept available.
-        "procurement_jit_stock",  # Because the analysiss include automatic procurement.
+        "procurement_jit_stock",  # Because the analysis include automatic
+        # procurement.
         "purchase_double_validation",  # Because the process need this 2 steps.
-        "forecasting_smoothing_techniques",  # Because we need some widgets and computation process here
-        # TODO: Create a glue module for this maths.
+        "forecasting_smoothing_techniques",  # Because we need some widgets and
+        # computation process here
         # "purchase_requisition_department",
         # "purchase_requisition_incoterms",
         # "purchase_requisition_line_description",
@@ -55,5 +56,4 @@
     "installable": True,
     "application": True,
     'auto_install': False,
-    'installable': True,
 }

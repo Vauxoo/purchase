@@ -61,7 +61,7 @@ openerp.purchase_console = function(instance) {
                         //TODO: Resolver como precrear columnas vacías de partners.
                         content = instance.web.qweb.render('ListView.row.one2many_columns', {widget: self, partners: self.partners});
                         $('.' + self.name + '_' + row_data.id.value).html(content);
-                        header = instance.web.qweb.render('ListView.row.one2many_headers', {partners: self.partners});
+                        header = instance.web.qweb.render('ListView.row.one2many_headers', {widget: self, partners: self.partners});
                         $("th[data-id='po_line_ids']").html(header);
                     });
 

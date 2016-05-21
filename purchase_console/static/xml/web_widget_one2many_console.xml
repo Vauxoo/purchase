@@ -13,11 +13,16 @@
         <t t-foreach="widget.elements.length" t-as="index">
             <div t-att-style="'width: ' + (Math.round(100/widget.elements.length - 0.5))  + '%; ' + 'float: left; text-align: center; z-index: 1000;'">
                 <div style="border-right: solid 1px gray;">
-                    <div class="row" t-att-title="'Quantity Quoted by:' + widget.elements[index].partner_id[1]"><t t-esc="widget.elements[index].product_qty"></t></div>
-                    <div class="row" title="Last price"><t t-esc="widget.elements[index].last_price"></t></div>
-                    <div class="row" title="Price on bid"><t t-esc="widget.elements[index].price_bid"></t></div>
-                    <div class="row" title="Unit price"><t t-esc="widget.elements[index].price_unit"></t></div>
-                    <div class="row-last" title="Cost in accounting"><t t-esc="widget.elements[index].accounting_cost"></t></div>
+                    <div class="row" t-att-title="'Quantity Quoted by:' + widget.elements[index].partner_id[1]">
+                        <t t-esc="widget.elements[index].product_qty"></t></div>
+                    <div class="row" title="Last price">
+                        <t t-esc="widget.elements[index].last_price"></t></div>
+                    <div class="row" title="Price on bid">
+                        <t t-esc="widget.elements[index].price_bid"></t></div>
+                    <div class="row" title="Unit price">
+                        <t t-esc="widget.elements[index].price_unit"></t></div>
+                    <div class="row-last" title="Cost in accounting">
+                        <t t-esc="widget.elements[index].accounting_cost"></t></div>
                 </div>
             </div>
         </t>

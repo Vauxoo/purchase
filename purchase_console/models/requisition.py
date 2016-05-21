@@ -19,36 +19,30 @@ class PurchaseRequisition(models.Model):
     def _get_suppliers(self):
         """Partners involved are the ones present as sellers in product and the
         ones manually added in purchase orders.
-        :return:
+        :return: recordset of suppliers
         """
-        supplier_orders_ids = []
-        if self.purchase_ids:
-            supplier_orders_ids = [
-                order.partner_id.id
-                for order in self.purchase_ids
-                if order.state not in ['cancel']]
-        products = []
-        if self.line_ids:
-            products = [line.product_id for line in self.line_ids]
-        suppliers = []
+        suppliers = self.env['res.partner']
+        products = self.env['product.product']
+        excluded = ['cancel']
+        purchases = self.purchase_ids.filtered(
+                lambda rec: rec.state not in excluded)
+        for order in purchases:
+            suppliers = suppliers + order.partner_id
+        for line in self.line_ids:
+            products = products + line.product_id
         for product in products:
-            if product.seller_ids:
-                suppliers = suppliers + \
-                    [supplier for supplier in product.seller_ids]
-        supplier_on_products_ids = [supplier.name.id for supplier in suppliers]
-        return supplier_orders_ids + supplier_on_products_ids
+            for supplier in product.seller_ids.mapped('name'):
+                if supplier not in suppliers:
+                    suppliers = suppliers + supplier.name
+        return suppliers
 
-    @api.one
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
     def _get_partners_related(self):
         """Given a set of purchase products in a bid, compute the partners that
-        can be called on such bid.
-        :return:
+        should be called on such bid.
         """
-        # If it was not forced to be only one.
-        if not self.supplier_ids:
-            if self.exclusive != 'exclusive':
-                self.supplier_ids = self._get_suppliers()
+        for order in self:
+            order.supplier_ids = self._get_suppliers()
 
     @api.one
     def _create_po_given_partner(self):
@@ -68,6 +62,7 @@ class PurchaseRequisition(models.Model):
                                     compute="_get_partners_related",
                                     track_visibility='always',
                                     copy=False,
+                                    domain=[('supplier', '=', True)],
                                     inverse='_create_po_given_partner')
     line_ids = fields.One2many('purchase.requisition.line',
                                'requisition_id',

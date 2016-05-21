@@ -110,6 +110,8 @@
                             <page string="Terms and Conditions">
                                 <field name="description" attrs="{'readonly': [('state','not in',('draft'))]}"/>
                             </page>
+                            <page string="Help for this screen">
+                            </page>
                         </notebook>
                     </div>
                 </div>
@@ -152,8 +154,20 @@
               </p>
             </field>
         </record>
+        <!-- reordering menus necesary to be consistent in the workflow proposed by this console.
+             -->
+        <record id="base.menu_procurement_management_supplier_name" model="ir.ui.menu">
+            <field name="sequence">0</field>
+        </record>
         <record id="purchase_requisition.menu_purchase_requisition_pro_mgt" model="ir.ui.menu">
             <field name="action" ref="purchase_console.action_purchase_console"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="purchase.menu_purchase_rfq" model="ir.ui.menu">
+            <field name="sequence">2</field>
+        </record>
+        <record id="purchase.menu_purchase_form_action" model="ir.ui.menu">
+            <field name="sequence">3</field>
         </record>
 
     </data>

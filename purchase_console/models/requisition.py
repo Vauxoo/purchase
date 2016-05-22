@@ -58,6 +58,8 @@ class PurchaseRequisition(models.Model):
             self.make_purchase_order(supplier.id)
 
     see_left_column = fields.Boolean()
+    user_id = fields.Many2one(help="User in charge of give follow up to this"
+                                   "requisition process.")
     supplier_ids = fields.Many2many('res.partner',
                                     compute="_get_partners_related",
                                     track_visibility='always',
@@ -169,6 +171,7 @@ class purchase_order_line(models.Model):
         :return:
         """
         # Using SQL just to be sure all is really fast.
+        # TODO: This should be pointing to account_invoice_report.
         query = """(SELECT l.id, l.price_unit, i.date_invoice
                         FROM account_invoice_line as l
                     INNER JOIN account_invoice as i ON i.id=l.invoice_id
@@ -260,7 +263,12 @@ class PurchaseRequisitionLine(models.Model):
     _inherit = "purchase.requisition.line"
 
     def _get_consolidated_price(self, req):
-        return 1234.5
+        product = req.product_id
+        cost = product.material_cost + \
+            product.landed_cost + \
+            product.production_cost + \
+            product.subcontracting_cost
+        return cost
 
     @api.multi
     def _get_line_fields(self):

@@ -24,8 +24,9 @@
         "procurement_jit_stock",  # Because the analysis include automatic
         # procurement.
         "purchase_double_validation",  # Because the process need this 2 steps.
-        "forecasting_smoothing_techniques",  # Because we need some widgets and
+        "forecasting_smoothing_techniques",
         # computation process here
+        "stock_landed_costs_segmentation",  # Because last cost is from here.
         # "purchase_requisition_department",
         # "purchase_requisition_incoterms",
         # "purchase_requisition_line_description",

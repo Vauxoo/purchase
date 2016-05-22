@@ -78,31 +78,18 @@ class PurchaseRequisition(models.Model):
                                       "discount to conceptually just show it "
                                       "in the RFQ to the supplier.")
 
-    @api.one
+    @api.multi
     def procure_products_from_suppliers(self):
         """Given a set of products compute procurements for products where
         those partners are suppliers.
-        TODO:
-        :return:
         """
-        pass
-        # if self.supplier_ids:
-        #     psi = self.env['product.supplierinfo'].search([('name',
-        #                                                     'in',
-        #                                                     [supplier.id
-        #                                                      for supplier in
-        #                                                      self.supplier_ids
-        #                                                      ])])
-        # for product in psi:
-        #     pass
-        #     # TODO: think this logic. It will be something complex :-(
+        for supplier in self.supplier_ids:
+            self.make_purchase_order(supplier.id)
 
     @api.multi
     def group_tenders(self):
         """This method is a little wired in order to respect only this
         specified set of rules to group tenders.
-
-        TODO:
 
         1. Given a set of tender lists it will cancel them and join all
         line_ids.
@@ -111,8 +98,6 @@ class PurchaseRequisition(models.Model):
         is merged split them with some other logic.
         4. It will close all the other Purchase Orders and Requisitions done
         before and related with the merged ones.
-
-        :return:
         """
         # requisition_obj = self.env['purchase.requisition']
         # new_requisition_id = requisition_obj.create(cr, uid, {

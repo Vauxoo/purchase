@@ -13,7 +13,10 @@ import openerp.addons.decimal_precision as dp
 
 
 class PurchaseRequisition(models.Model):
-    _inherit = 'purchase.requisition'
+    _name = 'purchase.requisition'
+    _inherit = ['purchase.requisition']
+    # pending until message_post_model is migrated.
+    # _inherit = ['purchase.requisition', 'message.post.show.all']
 
     @api.model
     def _get_suppliers(self):
@@ -33,7 +36,7 @@ class PurchaseRequisition(models.Model):
         for product in products:
             for supplier in product.seller_ids.mapped('name'):
                 if supplier not in suppliers:
-                    suppliers = suppliers + supplier.name
+                    suppliers = suppliers + supplier
         return suppliers
 
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
@@ -44,18 +47,15 @@ class PurchaseRequisition(models.Model):
         for order in self:
             order.supplier_ids = self._get_suppliers()
 
-    @api.one
+    @api.model
     def _create_po_given_partner(self):
         """When add a partner we assume you will ask for prices, then a PO is created.
         :return:
         """
-        supplier_on_orders_ids = []
-        if self.purchase_ids:
-            supplier_on_orders_ids = [
-                order.partner_id.id for order in self.purchase_ids]
-        for supplier in self.supplier_ids:
-            if supplier.id not in supplier_on_orders_ids:
-                self.make_purchase_order(supplier.id)
+        supplier_on_orders = self.purchase_ids.mapped('partner_id')
+        new_suppliers = supplier_on_orders - self.supplier_ids
+        for supplier in new_suppliers:
+            self.make_purchase_order(supplier.id)
 
     see_left_column = fields.Boolean()
     supplier_ids = fields.Many2many('res.partner',

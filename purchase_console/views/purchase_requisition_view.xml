@@ -22,6 +22,7 @@
                         <notebook>
                             <page string="General Information">
                                 <div class="oe_left_space">
+
                                     <div class="oe_right oe_button_box">
                                         <button name="procure_products_from_suppliers" string="Procure" type="object"
                                                 help="Procure product up today, if partners is empty then we will procure all products which need inventory If partner selected then only products which this partner can sell will be procured."
@@ -44,27 +45,45 @@
                                                 class="oe_stat_button"
                                                 icon="fa-align-justify"/>
                                     </div>
-                                    <group string="0.- Options">
-                                        <field name="exclusive" string="Exclusive" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="multiple_rfq_per_supplier" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                    </group>
-                                    <group string="1.- Basic Information">
-                                        <field name="supplier_ids" widget="many2many_tags"/>
-                                        <field name="advantage_discount"/>
-                                    </group>
-                                    <group string="3.- Logistic Information">
-                                        <field name="origin" placeholder="e.g. OP0025" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="date_end" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="ordering_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="schedule_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="picking_type_id" widget="selection" groups="stock.group_locations" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="company_id" groups="base.group_multi_company" widget="selection" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                    </group>
-                                    <group string="4.- General Info">
-                                        <field name="name" string="Code" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="user_id" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'purchase_requisition.group_purchase_requisition_user', 'purchase.group_purchase_user', 'account.group_account_invoice']}" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                        <field name="account_analytic_id" colspan="2" groups="purchase.group_analytic_accounting" attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                    </group>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h1><field name="name" string="Code" attrs="{'readonly': [('state','not in',('draft'))]}"/></h1>
+                                        </div>
+                                    </div>
+                                    <div class="oe_clear"/>
+                                    <div class="row">
+                                        <div class="col-md-5" style="border-right: 1px solid #eee;">
+                                            <group string="0.- Options">
+                                                <field name="exclusive" string="Exclusive" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="multiple_rfq_per_supplier" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            </group>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <group string="2.- Logistic Information">
+                                                <field name="origin" placeholder="e.g. OP0025" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="date_end" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="ordering_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="schedule_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="picking_type_id" widget="selection" groups="stock.group_locations" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="company_id" groups="base.group_multi_company" widget="selection" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            </group>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div class="row">
+                                        <div class="col-md-5" style="border-right: 1px solid #eee;">
+                                            <group string="1.- Basic Information">
+                                                <field name="supplier_ids" widget="many2many_tags"/>
+                                                <field name="advantage_discount"/>
+                                            </group>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <group string="3.- General Info">
+                                                <field name="user_id" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'purchase_requisition.group_purchase_requisition_user', 'purchase.group_purchase_user', 'account.group_account_invoice']}" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="account_analytic_id" colspan="2" groups="purchase.group_analytic_accounting" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                            </group>
+                                        </div>
+                                    </div>
                                 </div>
                             </page>
                             <page string="Console">
@@ -114,6 +133,11 @@
                             </page>
                         </notebook>
                     </div>
+                </div>
+                <hr/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
                 </div>
                 </form>
             </field>

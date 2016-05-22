@@ -19,6 +19,7 @@
     "category": "",
     "depends": [
         "board",  # Just because we need some graphic stuff from here
+        "message_post_model",  # Just because log properly some +2many
         "purchase_requisition",  # To have this concept available.
         "procurement_jit_stock",  # Because the analysis include automatic
         # procurement.

@@ -14,9 +14,8 @@ import openerp.addons.decimal_precision as dp
 
 class PurchaseRequisition(models.Model):
     _name = 'purchase.requisition'
-    _inherit = ['purchase.requisition']
     # pending until message_post_model is migrated.
-    # _inherit = ['purchase.requisition', 'message.post.show.all']
+    _inherit = ['purchase.requisition', 'message.post.show.all']
 
     @api.model
     def _get_suppliers(self):
@@ -62,7 +61,6 @@ class PurchaseRequisition(models.Model):
                                    "requisition process.")
     supplier_ids = fields.Many2many('res.partner',
                                     compute="_get_partners_related",
-                                    track_visibility='always',
                                     copy=False,
                                     domain=[('supplier', '=', True)],
                                     inverse='_create_po_given_partner')
@@ -70,8 +68,7 @@ class PurchaseRequisition(models.Model):
                                'requisition_id',
                                'Products to Purchase',
                                states={'done': [('readonly', True)]},
-                               copy=True,
-                               track_visbility='onchange')
+                               copy=True)
     advantage_discount = fields.Float(default=0.02,
                                       help="When you start negociate, may be"
                                       "you want to show a price a little less"

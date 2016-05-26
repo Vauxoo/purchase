@@ -9,7 +9,10 @@
                 <!-- Dear future me: container here because the chatter widget without this
                 will not render properly -->
                 <header>
-                    <button name="sent_suppliers" states="draft" string="Confirm Call" class="oe_highlight"/>
+                    <button name="procure_products_from_suppliers" string="Procure" type="object" class="oe_highlight"
+                            help="Procure product up today, if partners is empty then we will procure all products which need inventory If partner selected then only products which this partner can sell will be procured."/>
+                        <button name="sent_suppliers" states="draft" string="Confirm Call" class="oe_highlight"
+                            help="Mark this document as ready to ro purchase."/>
                     <button name="open_bid" states="in_progress" string="Close Call for Bids" class="oe_highlight"/>
                     <button name="tender_reset" states="cancel" string="Reset to Draft" type="object" />
                     <button name="open_product_line" states="open" string="Choose product lines" type="object" class="oe_highlight" groups="purchase.group_advance_bidding"/>
@@ -22,12 +25,7 @@
                         <notebook>
                             <page string="General Information">
                                 <div class="oe_left_space">
-
                                     <div class="oe_right oe_button_box">
-                                        <button name="procure_products_from_suppliers" string="Procure" type="object"
-                                                help="Procure product up today, if partners is empty then we will procure all products which need inventory If partner selected then only products which this partner can sell will be procured."
-                                                class="oe_stat_button"
-                                                icon="fa-gears"/>
                                         <button name="%(purchase_requisition.action_purchase_requisition_partner)d" type="action"
                                                 string="Request a Quotation"
                                                 attrs="{'invisible': ['|', ('line_ids','=',[]),('state', 'in', ('draft' ,'open','done'))]}"
@@ -95,14 +93,14 @@
                                     <tree string="Products" editable="bottom">
                                         <field name="product_id"
                                                on_change="onchange_product_id(product_id,product_uom_id,parent.account_analytic_id,account_analytic_id,parent.schedule_date,schedule_date)"/>
-                                        <field name="product_uom_id" groups="product.group_uom"/>
-                                        <field name="product_qty"/>
+                                        <field name="product_uom_id" groups="product.group_uom" string="UoM"/>
+                                        <field name="product_qty" string="Qty"/>
                                         <field name="stock"/>
                                         <field name="forecast_qty"/>
                                         <field name="stock_to"/>
                                         <field name="consolidated_price"/>
                                         <field name="schedule_date" string="Scheduled"/>
-                                        <field name="account_analytic_id" groups="purchase.group_analytic_accounting"/>
+                                        <field name="account_analytic_id" groups="purchase.group_analytic_accounting" string="Analytic"/>
                                         <field name="po_line_ids" widget="one2many_columns"/>
                                     </tree>
                                 </field>

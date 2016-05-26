@@ -5,19 +5,13 @@ openerp.purchase_console = function(instance) {
 
     instance.web.list.One2manyColumns = instance.web.list.Column.extend({
         init: function (id, tag, attrs) {
-            //console.log('On My widget ...... id, tag, attrs');
-            //console.log(id);
-            //console.log(tag);
-            //console.log(attrs);
             _.extend(attrs, {
                 id: id,
                 tag: tag,
             });
-
             this.modifiers = attrs.modifiers ? JSON.parse(attrs.modifiers) : {};
             delete attrs.modifiers;
             _.extend(this, attrs);
-
             if (this.modifiers['tree_invisible']) {
                 this.invisible = '1';
             } else { delete this.invisible; }

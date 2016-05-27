@@ -23,20 +23,16 @@ class PurchaseRequisition(models.Model):
         ones manually added in purchase orders.
         :return: recordset of suppliers
         """
-        suppliers = self.env['res.partner']
         products = self.env['product.product']
         excluded = ['cancel']
         purchases = self.purchase_ids.filtered(
                 lambda rec: rec.state not in excluded)
-        for order in purchases:
-            suppliers = suppliers + order.partner_id
-        for line in self.line_ids:
-            products = products + line.product_id
+        suppliers_pur = purchases.mapped('partner_id')
+        products = self.line_ids.mapped('product_id')
+        suppliers_prod = self.env['res.partner']
         for product in products:
-            for supplier in product.seller_ids.mapped('name'):
-                if supplier not in suppliers:
-                    suppliers = suppliers + supplier
-        return suppliers
+            suppliers_prod = product.seller_ids.mapped('name')
+        return self.supplier_ids | suppliers_pur | suppliers_prod
 
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
     def _get_partners_related(self):
@@ -53,6 +49,7 @@ class PurchaseRequisition(models.Model):
         """
         supplier_on_orders = self.purchase_ids.mapped('partner_id')
         new_suppliers = supplier_on_orders - self.supplier_ids
+        # If there is a new supplier then new purchase orders are created.
         for supplier in new_suppliers:
             self.make_purchase_order(supplier.id)
 

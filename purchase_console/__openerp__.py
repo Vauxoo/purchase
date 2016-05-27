@@ -42,6 +42,7 @@
     "data": [
         'views/assets_backend.xml',
         'views/purchase_requisition_view.xml',
+        'wizard/fill_products_wizard_view.xml',
     ],
     "demo": [
     ],

@@ -31,8 +31,9 @@ class PurchaseRequisition(models.Model):
         products = self.line_ids.mapped('product_id')
         suppliers_prod = self.env['res.partner']
         for product in products:
-            suppliers_prod = product.seller_ids.mapped('name')
-        return self.supplier_ids | suppliers_pur | suppliers_prod
+            suppliers_prod += product.seller_ids.mapped('name')
+        partners = self.supplier_ids | suppliers_pur | suppliers_prod
+        return partners
 
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
     def _get_partners_related(self):
@@ -115,6 +116,31 @@ class PurchaseRequisition(models.Model):
         # }
         # return new_requisition_id, line_ids
         pass
+
+    @api.multi
+    def open_fill(self):
+        """This opens the fill wizard
+        @return: the RFQ tree view
+        """
+        imd = self.env['ir.model.data']
+        action = imd.xmlid_to_object('purchase_console.action_fill_wizard')
+        form_view_id = imd.xmlid_to_res_id('purchase_console.view_fill_products_form')
+
+        result = {
+            'name': action.name,
+            'help': action.help,
+            'type': action.type,
+            'views': [[form_view_id, 'form'],
+                      [False, 'graph'],
+                      [False, 'kanban'],
+                      [False, 'calendar'],
+                      [False, 'pivot']],
+            'target': action.target,
+            'context': action.context,
+            'res_model': action.res_model,
+        }
+        # result = {'type': 'ir.actions.act_window_close'}
+        return result
 
 
 class procurement_order(models.Model):

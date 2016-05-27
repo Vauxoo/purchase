@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_fill_products_form" model="ir.ui.view">
+            <field name="name">Fill Products</field>
+            <field name="model">fill.products</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group string="Pick a partner to bring all products from">
+                        <field name="name" domain="[('supplier', '=', True), ('is_company', '=', True)]"/>
+                        <field name="procure"/>
+                    </group>
+                    <footer>
+                        <button class="oe_highlight" type="object" name="fill" string="Fill"/>
+                        or
+                        <button class="oe_link" special="cancel" string="Close"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_fill_wizard">
+            <field name="name">Fill Products</field>
+            <field name="res_model">fill.products</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="purchase_console.view_fill_products_form"/>
+        </record>
+    </data>
+</openerp>

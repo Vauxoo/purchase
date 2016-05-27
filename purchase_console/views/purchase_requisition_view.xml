@@ -87,6 +87,10 @@
                                 </div>
                             </page>
                             <page string="Console">
+                                <button name="open_fill" type="object" class="oe_stat_button"
+                                    icon="fa-align-justify" string="Fill"
+                                    help="Populate this RFQ with all products ">
+                                </button>
                                 <field name="line_ids" group_line="po_line_ids"
                                        attrs="{'readonly': [('state','not in',('draft'))]}"
                                        widget="one2many_console">

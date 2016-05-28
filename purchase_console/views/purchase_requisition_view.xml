@@ -9,10 +9,11 @@
                 <!-- Dear future me: container here because the chatter widget without this
                 will not render properly -->
                 <header>
+                    <button name="open_fill" type="object" string="Populate" class="oe_highlight" help="Populate this RFQ with all products which belong to an specific partner"/>
                     <button name="procure_products_from_suppliers" string="Procure" type="object" class="oe_highlight"
                             help="Procure product up today, if partners is empty then we will procure all products which need inventory If partner selected then only products which this partner can sell will be procured."/>
-                        <button name="sent_suppliers" states="draft" string="Confirm Call" class="oe_highlight"
-                            help="Mark this document as ready to ro purchase."/>
+                    <button name="sent_suppliers" states="draft" string="Confirm Call" class="oe_highlight"
+                        help="Mark this document as ready to ro purchase."/>
                     <button name="open_bid" states="in_progress" string="Close Call for Bids" class="oe_highlight"/>
                     <button name="tender_reset" states="cancel" string="Reset to Draft" type="object" />
                     <button name="open_product_line" states="open" string="Choose product lines" type="object" class="oe_highlight" groups="purchase.group_advance_bidding"/>
@@ -76,6 +77,7 @@
                                                 <field name="schedule_date" attrs="{'readonly': [('state','not in',('draft'))]}"/>
                                                 <field name="picking_type_id" widget="selection" groups="stock.group_locations" attrs="{'readonly': [('state','not in',('draft'))]}"/>
                                                 <field name="company_id" groups="base.group_multi_company" widget="selection" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                                <field name="stock_to"/>
                                             </group>
                                         </div>
                                         <div class="col-md-6">
@@ -87,10 +89,6 @@
                                 </div>
                             </page>
                             <page string="Console">
-                                <button name="open_fill" type="object" class="oe_stat_button"
-                                    icon="fa-align-justify" string="Fill"
-                                    help="Populate this RFQ with all products ">
-                                </button>
                                 <field name="line_ids" group_line="po_line_ids"
                                        attrs="{'readonly': [('state','not in',('draft'))]}"
                                        widget="one2many_console">
@@ -101,7 +99,6 @@
                                         <field name="product_qty" string="Qty"/>
                                         <field name="stock"/>
                                         <field name="forecast_qty"/>
-                                        <field name="stock_to"/>
                                         <field name="consolidated_price"/>
                                         <field name="schedule_date" string="Scheduled"/>
                                         <field name="account_analytic_id" groups="purchase.group_analytic_accounting" string="Analytic"/>
@@ -123,6 +120,8 @@
                                         <button name="purchase_cancel" states="draft,confirmed,wait_auth" string="Cancel Purchase Order" icon="gtk-cancel"/>
                                         <button name="purchase_confirm" states="draft" string="Confirm Purchase Order" icon="gtk-apply"/>
                                         <button name="purchase_approve" states="confirmed" string="Approved by Supplier" icon="gtk-ok"/>
+                                        <button name="print_quotation" states="draft,sent" string="print RFQ" type="object" icon="gtk-print"/>
+                                        <button name="print_quotation_xls" states="draft,sent" string="print RFQ in Excel" type="object" icon="gtk-print"/>
                                         <button name="wkf_send_rfq" states="draft" string="Send RFQ by Email" type="object" context="{'send_rfq':True}" icon="gtk-network"/>
                                     </tree>
                                 </field>

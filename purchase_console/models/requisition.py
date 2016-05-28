@@ -14,8 +14,8 @@ import openerp.addons.decimal_precision as dp
 
 class PurchaseRequisition(models.Model):
     _name = 'purchase.requisition'
-    # pending until message_post_model is migrated.
     _inherit = ['purchase.requisition', 'message.post.show.all']
+    _excluded_states_po = ['cancel']
 
     @api.model
     def _get_suppliers(self):
@@ -24,10 +24,12 @@ class PurchaseRequisition(models.Model):
         :return: recordset of suppliers
         """
         products = self.env['product.product']
-        excluded = ['cancel']
         purchases = self.purchase_ids.filtered(
-                lambda rec: rec.state not in excluded)
+                lambda rec: rec.state not in self._excluded_states_po)
         suppliers_pur = purchases.mapped('partner_id')
+        # If there is already some purchase better use the partners there.
+        if purchases:
+            return suppliers_pur
         products = self.line_ids.mapped('product_id')
         suppliers_prod = self.env['res.partner']
         for product in products:
@@ -74,6 +76,8 @@ class PurchaseRequisition(models.Model):
                                       "the system, here you can set such "
                                       "discount to conceptually just show it "
                                       "in the RFQ to the supplier.")
+    stock_to = fields.Char(readonly=True, help="Technical field: How much time"
+                                               " do you have of stock.")
 
     @api.multi
     def procure_products_from_suppliers(self):
@@ -85,7 +89,7 @@ class PurchaseRequisition(models.Model):
 
     @api.multi
     def group_tenders(self):
-        """This method is a little wired in order to respect only this
+        """TODO: This method is a little wired in order to respect only this
         specified set of rules to group tenders.
 
         1. Given a set of tender lists it will cancel them and join all
@@ -96,25 +100,6 @@ class PurchaseRequisition(models.Model):
         4. It will close all the other Purchase Orders and Requisitions done
         before and related with the merged ones.
         """
-        # requisition_obj = self.env['purchase.requisition']
-        # new_requisition_id = requisition_obj.create(cr, uid, {
-        #     'origin': procurement.origin,
-        #     'date_end': procurement.date_planned,
-        #     'warehouse_id': warehouse_id and warehouse_id[0] or False,
-        #     'company_id': procurement.company_id.id,
-        #     'procurement_id': procurement.id,
-        #     'picking_type_id': procurement.rule_id.picking_type_id.id,
-        # })
-
-        # line_ids = {
-        #     'line_ids': [(0, 0, {
-        #         'product_id': procurement.product_id.id,
-        #         'product_uom_id': procurement.product_uom.id,
-        #         'product_qty': procurement.product_qty
-
-        #     })],
-        # }
-        # return new_requisition_id, line_ids
         pass
 
     @api.multi
@@ -295,22 +280,16 @@ class PurchaseRequisitionLine(models.Model):
         for req in self:
             req.consolidated_price = self._get_consolidated_price(req)
 
-    def get_time_stock(self, req):
-        return "3 weeks"
-
-    @api.multi
-    def _get_time_stock_to(self):
-        for req in self:
-            req.stock_to = self.get_time_stock(req)
-
     @api.multi
     def _get_po_line(self):
+        excluded = self.env['purchase.requisition']._excluded_states_po
         for req in self:
             purl = req.env['purchase.order.line']
             po_line_ids = req.requisition_id.po_line_ids.ids
-            req.po_line_ids = purl.search([('id', 'in', po_line_ids),
-                                          ('product_id', '=',
-                                              req.product_id.id)])
+            domain = [('id', 'in', po_line_ids),
+                      ('product_id', '=', req.product_id.id),
+                      ('order_id.state', 'not in', excluded)]
+            req.po_line_ids = purl.search(domain)
 
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders "
@@ -326,7 +305,7 @@ class PurchaseRequisitionLine(models.Model):
                                       "other expenses.",
                                       compute="_get_line_fields")
     # TODO: Put this in the stock_forecast module.
-    forecast_qty = fields.Float('Proj. Qty', readonly=True,
+    forecast_qty = fields.Float('Projected', readonly=True,
                                 help="Technical field: The quantity "
                                 "projected with the forecast module by any"
                                 " mean.")
@@ -334,7 +313,3 @@ class PurchaseRequisitionLine(models.Model):
                          help="Technical field: Stock when the forecast "
                          " was computed, necessary to know if you really"
                          "can live with stock actual or not.")
-    stock_to = fields.Char(readonly=True,
-                           help="Technical field: How much time do you"
-                           " have of stock. ",
-                           compute="_get_time_stock_to")

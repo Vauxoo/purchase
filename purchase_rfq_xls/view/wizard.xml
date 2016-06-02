@@ -4,16 +4,16 @@
 
         <!--   Purchase Quotation Wizard -->
 
-        <record id="view_purchase_quotation" model="ir.ui.view">
+        <record id="view_purchase_rfq_xls_wizard" model="ir.ui.view">
             <field name="name">Purchase Quotation Wizard</field>
             <field name="model">purchase.quotation.wizard</field>
             <field name="arch" type="xml">
                 <form string="Update a Quotation Prices">
                     <field name="state" invisible="1" />
-                    <header>
+                    <div>
                         <button name="import_xls" string="Import" type="object" class="oe_highlight" attrs="{'invisible': [('template_action', '=', 'export')]}"/>
                         <button name="print_report" string="Export" type="object" class="oe_highlight" attrs="{'invisible': [('template_action', '=', 'import')]}"/>
-                    </header>
+                    </div>
                     <group string="Purchase">
                         <h2><field name="purchase"/></h2>
                     </group>
@@ -82,6 +82,7 @@
             res_model="purchase.quotation.wizard"
             src_model="purchase.order"
             view_mode="form"
+            view_id="purchase_rfq_xls.view_purchase_rfq_xls_wizard"
             target="inline"
             view_type="form"/>
     </data>

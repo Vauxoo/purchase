@@ -30,6 +30,19 @@ class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     @api.multi
+    def _get_received_quote(self):
+        att = self.env['ir.attachment']
+        for purchase in self:
+            # TODO: Check if it was loaded marking it.
+            att = att.search([('res_id', '=', purchase.id),
+                              ('name', 'ilike', 'xls')])
+            purchase.received_quote = bool(att)
+
+    received_quote = fields.Boolean(help="We have at least one xls file as"
+                                         "attachment already loaded.",
+                                    compute="_get_received_quote")
+
+    @api.multi
     def wkf_send_rfq(self):
         assert len(self) == 1, _('This option should only be used '
                                  'for a single id at a time.)')
@@ -62,8 +75,9 @@ class PurchaseOrder(models.Model):
             check_xls = file_xls.datas_fname and \
                 file_xls.datas_fname.endswith('.xls')
         if len(file_xls) > 1:
-            attch_ids = [atta.id for atta in file_xls if file_xls.datas_fname
-                         and file_xls.datas_fname.endswith('.xls')]
+            attch_ids = [atta.id for atta in file_xls if
+                         file_xls.datas_fname and
+                         file_xls.datas_fname.endswith('.xls')]
             check_xls = bool(attch_ids)
             file_xls = check_xls and attch_ids[0]
         # if not exist file xls in attachments
@@ -119,6 +133,33 @@ class PurchaseOrder(models.Model):
             'target': 'new',
         }
 
+    @api.multi
+    def open_rfw_web(self):
+        self.ensure_one()
+        rep_url = "/report/html/purchase_rfq_xls.report_template/%i" % self.id
+        action = {
+            'type': 'ir.actions.act_url',
+            'name': "Web RFQ",
+            'target': "new",
+            'context': self._context,
+            'url': rep_url,
+            }
+        return action
+
+    @api.multi
+    def receive_rfq_xls(self):
+        self.ensure_one()
+        action = self.env.ref(
+                'purchase_rfq_xls.action_purchase_quotation').read([])[0]
+        import pprint
+        action.update({'target': 'new'})
+        context = dict(self._context)
+        context.update({
+            'purchase': self.id
+            })
+
+        pprint.pprint(context)
+        return action
 
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"

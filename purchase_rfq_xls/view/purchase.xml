@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="purchase_order_line_view_link" model="ir.ui.view">
+            <field name="name">purchase.order.view.link.report</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_2_stock_picking"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[contains(@class, 'oe_button_box')]" position="inside">
+                    <button type="object" name="open_rfw_web" class="oe_stat_button" icon="fa-link"
+                        help="See the web format to load an rfq response">
+                        <field name="received_quote" widget="statinfo" string="RFQ Web"/>
+                    </button>
+                </xpath>
+                <xpath expr="//button[@name='wkf_send_rfq']" position="after">
+                    <button name="receive_rfq_xls" string="Load From Supplier" type="object"
+                        help="If you received it from a supplier the offer with prices for this rfq you can load manually the excel file on this wizard."/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

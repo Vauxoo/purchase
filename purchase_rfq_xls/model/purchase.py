@@ -20,8 +20,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 from openerp import api, fields, models, _
-from openerp.addons.controller_report_xls.controllers.main \
-    import ReportController
+try:
+    from openerp.addons.controller_report_xls.controllers.main \
+            import get_xls
+except ImportError:
+    print 'Dear Future Me.... Please do not do this'
 
 import base64
 
@@ -89,7 +92,7 @@ class PurchaseOrder(models.Model):
                 data={'ids': self.ids, 'form': {}}
             )
             # convert html to xls
-            xls = ReportController().get_xls(html)
+            xls = get_xls(html)
             # create attachment
             file_xls = self.env['ir.attachment'].create({
                 'name': 'RFQ_' + str(self.name) + '.xls',

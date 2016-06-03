@@ -12,9 +12,15 @@
                         <field name="received_quote" widget="statinfo" string="RFQ Web"/>
                     </button>
                 </xpath>
-                <xpath expr="//button[@name='wkf_send_rfq']" position="after">
+                <xpath expr="//button[@name='print_quotation']" position="after">
                     <button name="receive_rfq_xls" string="Load From Supplier" type="object"
                         help="If you received it from a supplier the offer with prices for this rfq you can load manually the excel file on this wizard."/>
+                </xpath>
+                <xpath expr="//button[@name='wkf_send_rfq' and @states='draft']" position="replace">
+                    <button name="action_rfq_send" states="draft" string="Send RFQ by Email" type="object" context="{'send_rfq':True}" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//button[@name='wkf_send_rfq' and @states='sent']" position="replace">
+                    <button name="action_rfq_send" states="sent" string="Re-Send RFQ by Email" type="object" context="{'send_rfq':True}"/>
                 </xpath>
             </field>
         </record>

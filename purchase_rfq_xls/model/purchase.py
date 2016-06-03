@@ -19,6 +19,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
+import base64
 from openerp import api, fields, models, _
 try:
     from openerp.addons.controller_report_xls.controllers.main \
@@ -26,7 +27,22 @@ try:
 except ImportError:
     print 'Dear Future Me.... Please do not do this'
 
-import base64
+
+class MailComposer(models.TransientModel):
+
+    _name = 'mail.compose.message'
+    _inherit = 'mail.compose.message'
+
+    def get_mail_values(self, cr, uid, wizard, res_ids, context=None):
+        extra_attachments = context.get('extra_attachments')
+        if extra_attachments:
+            assert isinstance(extra_attachments, list), '''Extra Attachments
+                                                        to be copied
+                                                        must be a list of ids
+                                                        '''
+            att_ids = context.get('extra_attachments')
+            wizard.write({'attachment_ids': [(4, i) for i in att_ids]})
+        return super(MailComposer, self).get_mail_values(cr, uid, wizard, res_ids, context=context)
 
 
 class PurchaseOrder(models.Model):
@@ -38,102 +54,85 @@ class PurchaseOrder(models.Model):
         for purchase in self:
             # TODO: Check if it was loaded marking it.
             att = att.search([('res_id', '=', purchase.id),
-                              ('name', 'ilike', 'xls')])
-            purchase.received_quote = bool(att)
+                              ('res_model', '=', 'purchase.order'),
+                              ('name', 'ilike', '.xls')],
+                             limit=1)
+            if not att:
+                purchase.supplier_quote = self._get_xls()
+            if att:
+                purchase.supplier_quote = att
+            purchase.received_quote = bool(purchase.supplier_quote)
 
     received_quote = fields.Boolean(help="We have at least one xls file as"
                                          "attachment already loaded.",
                                     compute="_get_received_quote")
+    supplier_quote = fields.Many2one("ir.attachment",
+                                     help="Attachment considered the one from"
+                                          " supplier",
+                                     compute="_get_received_quote")
+
+    @api.model
+    def _get_xls(self):
+        html = self.env['report'].get_html(
+            self,
+            'purchase_rfq_xls.report_template',
+            data={'ids': self.ids, 'form': {}}
+        )
+        # convert html to xls
+        xls = get_xls(html)
+        # create attachment
+        return self.env['ir.attachment'].create({
+            'name': 'RFQ_' + str(self.name) + '.xls',
+            'datas': base64.b64encode(xls),
+            'datas_fname': 'RFQ_' + str(self.name) + '.xls',
+            'type': 'binary',
+            'res_model': 'purchase.order',
+            'res_id': self.ids[0],
+            'user_id': self._uid,
+        })
 
     @api.multi
-    def wkf_send_rfq(self):
-        assert len(self) == 1, _('This option should only be used '
-                                 'for a single id at a time.)')
+    def action_rfq_send(self):
+        '''
+        This function opens a window to compose an email, with the edi purchase
+        template message loaded by default
+        backported from v9.0.
+        '''
+        self.ensure_one()
+        ir_model_data = self.env['ir.model.data']
         try:
-            if self._context.get('send_rfq'):
-                template = self.env.ref(
-                    'purchase.email_template_edi_purchase',
-                    False
-                )
+            if self.env.context.get('send_rfq', False):
+                template_id = ir_model_data.get_object_reference(
+                        'purchase', 'email_template_edi_purchase')[1]
             else:
-                template = self.env.ref(
-                    'purchase.email_template_edi_purchase_done',
-                    False
-                )
+                template_id = ir_model_data.get_object_reference(
+                        'purchase', 'email_template_edi_purchase_done')[1]
         except ValueError:
-            template = False
-        compose_form = self.env.ref(
-            'mail.email_compose_message_wizard_form',
-            False
-        )
-        # file ext is xls?
-        check_xls = False
-        # get attachment
-        file_xls = self.env['ir.attachment'].search([
-            ('res_model', '=', 'purchase.order'),
-            ('res_id', '=', self.ids[0])
-        ])
-        # check attachment ext
-        if len(file_xls) == 1:
-            check_xls = file_xls.datas_fname and \
-                file_xls.datas_fname.endswith('.xls')
-        if len(file_xls) > 1:
-            attch_ids = [atta.id for atta in file_xls if
-                         file_xls.datas_fname and
-                         file_xls.datas_fname.endswith('.xls')]
-            check_xls = bool(attch_ids)
-            file_xls = check_xls and attch_ids[0]
-        # if not exist file xls in attachments
-        if not check_xls:
-            # get html from qweb report
-            html = self.env['report'].get_html(
-                self,
-                'purchase_rfq_xls.report_template',
-                data={'ids': self.ids, 'form': {}}
-            )
-            # convert html to xls
-            xls = get_xls(html)
-            # create attachment
-            file_xls = self.env['ir.attachment'].create({
-                'name': 'RFQ_' + str(self.name) + '.xls',
-                'datas': base64.b64encode(xls),
-                'datas_fname': 'RFQ_' + str(self.name) + '.xls',
-                'type': 'binary',
-                'res_model': 'purchase.order',
-                'res_id': self.ids[0],
-                'user_id': self._uid,
-            })
-        # create mail
-        composer = self.env['mail.compose.message'].create({
-            'model': 'purchase.order',
-            'res_id': self.id,
-            'template_id': template.id,
-            'composition_mode': 'comment',
+            template_id = False
+        try:
+            compose_form_id = ir_model_data.get_object_reference(
+                        'mail', 'email_compose_message_wizard_form')[1]
+        except ValueError:
+            compose_form_id = False
+        ctx = dict(self.env.context or {})
+        ctx.update({
+            'default_model': 'purchase.order',
+            'default_res_id': self.ids[0],
+            'default_use_template': bool(template_id),
+            'default_template_id': template_id,
+            'default_composition_mode': 'comment',
+            'extra_attachments': [self.supplier_quote.id],
         })
-        # get email template data
-        template_values = composer.onchange_template_id(
-            template.id,
-            'comment',
-            'purchase.order',
-            self.id
-        )['value']
-        # assign new attachment
-        template_values['attachment_ids'] = [
-            (4, elem) for elem in template_values.get('attachment_ids', [])
-        ]
-        template_values['attachment_ids'].append((4, file_xls.id))
-        composer.write(template_values)
-
         return {
             'name': _('Compose Email'),
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'mail.compose.message',
-            'res_id': composer.id,
-            'views': [(compose_form.id, 'form')],
-            'view_id': compose_form.id,
+            'views': [(compose_form_id, 'form')],
+            'view_id': compose_form_id,
             'target': 'new',
+            'context': ctx,
         }
 
     @api.multi
@@ -154,15 +153,14 @@ class PurchaseOrder(models.Model):
         self.ensure_one()
         action = self.env.ref(
                 'purchase_rfq_xls.action_purchase_quotation').read([])[0]
-        import pprint
         action.update({'target': 'new'})
         context = dict(self._context)
         context.update({
             'purchase': self.id
             })
 
-        pprint.pprint(context)
         return action
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"

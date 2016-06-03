@@ -27,6 +27,7 @@
     "website": "http://www.vauxoo.com/",
     "license": "LGPL-3",
     "depends": [
+        "mail",
         "purchase",
         "controller_report_xls",
     ],

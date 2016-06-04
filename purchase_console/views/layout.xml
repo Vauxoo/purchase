@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim:fdn=3:
+-->
+<openerp>
+    <data>
+        <template id="purchase_console.layout" name="purchase requisition layout">
+            <t t-call="web.layout">
+                <t t-set="head">
+                    <t t-call-assets="web.assets_common"/>
+                    <t t-call-assets="web.assets_backend"/>
+                </t>
+            </t>
+        </template>
+        <template id="purchase_console.header" name="purchase requisition header">
+            <div class="row">
+                <div class="btn-group">
+                    <a class="btn btn-link">Go to full document</a>
+                    <a class="btn btn-link">Review</a>
+                </div>
+            </div>
+        </template>
+        <template id="purchase_console.options" name="purchase requisition options">
+            <div class="row">
+                <div class="col-md-4"><span>Partners 1</span></div>
+                <div class="col-md-4">Partners 2</div>
+                <div class="col-md-4">Partners 3</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">10.0</div>
+                <div class="col-md-4">11.0</div>
+                <div class="col-md-4">9.0</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">10.0</div>
+                <div class="col-md-4">11.0</div>
+                <div class="col-md-4">9.0</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">10.0</div>
+                <div class="col-md-4">11.0</div>
+                <div class="col-md-4">9.0</div>
+            </div>
+        </template>
+        <template id="purchase_console.line" name="purchase requisition console">
+            <tr>
+                <td><span t-raw="line.product_id.display_name"/></td>
+                <td><span t-raw="line.product_qty"/></td>
+                <td><span t-raw="line.forecast_qty"/></td>
+                <td><span t-raw="line.stock"/></td>
+                <td><span t-raw="line.consolidated_price"/></td>
+                <td><span t-raw="line.schedule_date"/></td>
+                <td>
+                    <t t-call="purchase_console.options"/>
+                </td>
+            </tr>
+        </template>
+        <template id="purchase_console.requisition" name="purchase requisition console">
+            <t t-call="purchase_console.layout"></t>
+            <div class="container-fluid">
+                <t t-call="purchase_console.header"/>
+                <table class="table  table-striped table-bordered table-hover">
+                    <t t-foreach="requisition.line_ids" t-as="line">
+                        <t t-call="purchase_console.line"/>
+                    </t>
+                </table>
+            </div>
+        </template>
+    </data>
+</openerp>

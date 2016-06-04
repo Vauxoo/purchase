@@ -26,5 +26,4 @@ class PurchaseOrder(models.Model):
         self.signal_workflow('send_rfq')
         action = self.env['report'].with_context(context).get_action(
                         self, 'purchase.report_purchasequotation')
-        print action
         return action

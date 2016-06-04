@@ -128,6 +128,20 @@ class PurchaseRequisition(models.Model):
         return result
 
 
+    @api.multi
+    def open_console_web(self):
+        self.ensure_one()
+        rep_url = "/purchase/console/%i" % self.id
+        action = {
+            'type': 'ir.actions.act_url',
+            'name': "Web Tender",
+            'target': "new",
+            'context': self._context,
+            'url': rep_url,
+        }
+        return action
+
+
 class procurement_order(models.Model):
     _inherit = 'procurement.order'
 

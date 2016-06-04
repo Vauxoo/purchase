@@ -18,7 +18,14 @@ class Console(http.Controller):
         '/purchase/console/<model("purchase.requisition"):requisition>/',
         auth='user'
         )
-    def teacher(self, requisition):
+    def console(self, requisition):
+        # Because is a basic algorithm to be used just for rendering.
+        max_po_line_ids = len(requisition.supplier_ids)
+        po_lines_width = int(12.00/max_po_line_ids)
+        ##########################
         return http.request.render('purchase_console.requisition', {
             'requisition': requisition,
+            'po_lines_width': po_lines_width,
+            'po_lines_number': max_po_line_ids,
+            'range': range,
         })

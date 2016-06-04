@@ -21,25 +21,38 @@
         </template>
         <template id="purchase_console.options" name="purchase requisition options">
             <div class="row">
-                <div class="col-md-4"><span>Partners 1</span></div>
-                <div class="col-md-4">Partners 2</div>
-                <div class="col-md-4">Partners 3</div>
+                <t t-foreach="line.get_po_line_render()" t-as="element">
+                    <div t-attf-class="col-md-{{po_lines_width}}">
+                        <span t-raw="element.product_qty"/>
+                    </div>
+                </t>
             </div>
             <div class="row">
-                <div class="col-md-4">10.0</div>
-                <div class="col-md-4">11.0</div>
-                <div class="col-md-4">9.0</div>
+                <t t-foreach="line.get_po_line_render()" t-as="element">
+                    <div t-attf-class="col-md-{{po_lines_width}}">
+                        <span t-raw="element.price_unit"/>
+                    </div>
+                </t>
             </div>
-            <div class="row">
-                <div class="col-md-4">10.0</div>
-                <div class="col-md-4">11.0</div>
-                <div class="col-md-4">9.0</div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">10.0</div>
-                <div class="col-md-4">11.0</div>
-                <div class="col-md-4">9.0</div>
-            </div>
+        </template>
+        <template id="purchase_console.table_header" name="purchase requisition console">
+            <tr>
+                <th><span>Product</span></th>
+                <th><span>Product</span></th>
+                <th><span>Product</span></th>
+                <th><span>Product</span></th>
+                <th><span>Product</span></th>
+                <th><span>Product</span></th>
+                <th>
+                    <div class="row">
+                        <t t-foreach="requisition.supplier_ids" t-as="supplier">
+                            <div t-attf-class="col-md-{{po_lines_width}}">
+                                <span t-raw="supplier.display_name"/>
+                            </div>
+                        </t>
+                    </div>
+                </th>
+            </tr>
         </template>
         <template id="purchase_console.line" name="purchase requisition console">
             <tr>
@@ -59,9 +72,14 @@
             <div class="container-fluid">
                 <t t-call="purchase_console.header"/>
                 <table class="table  table-striped table-bordered table-hover">
-                    <t t-foreach="requisition.line_ids" t-as="line">
-                        <t t-call="purchase_console.line"/>
-                    </t>
+                    <thead>
+                        <t t-call="purchase_console.table_header"/>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="requisition.line_ids" t-as="line">
+                            <t t-call="purchase_console.line"/>
+                        </t>
+                    </tbody>
                 </table>
             </div>
         </template>

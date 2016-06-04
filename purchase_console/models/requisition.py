@@ -9,6 +9,7 @@
 #    planned by: Nhomar Hernandez <nhomar@vauxoo.com>
 ############################################################################
 from openerp import models, fields, api, _
+from operator import attrgetter
 import openerp.addons.decimal_precision as dp
 
 
@@ -35,7 +36,9 @@ class PurchaseRequisition(models.Model):
         for product in products:
             suppliers_prod += product.seller_ids.mapped('name')
         partners = self.supplier_ids | suppliers_pur | suppliers_prod
-        return partners
+        # Always sorted in order to ensure a consistent behavior in the console
+        # when iterated.
+        return partners.sorted(key=attrgetter('name'))
 
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
     def _get_partners_related(self):
@@ -109,7 +112,8 @@ class PurchaseRequisition(models.Model):
         """
         imd = self.env['ir.model.data']
         action = imd.xmlid_to_object('purchase_console.action_fill_wizard')
-        form_view_id = imd.xmlid_to_res_id('purchase_console.view_fill_products_form')
+        form_view_id = imd.xmlid_to_res_id(
+                'purchase_console.view_fill_products_form')
 
         result = {
             'name': action.name,
@@ -126,7 +130,6 @@ class PurchaseRequisition(models.Model):
         }
         # result = {'type': 'ir.actions.act_window_close'}
         return result
-
 
     @api.multi
     def open_console_web(self):
@@ -304,6 +307,19 @@ class PurchaseRequisitionLine(models.Model):
                       ('product_id', '=', req.product_id.id),
                       ('order_id.state', 'not in', excluded)]
             req.po_line_ids = purl.search(domain)
+
+    @api.model
+    def get_po_line_render(self):
+        '''For render reasons we need have a False record per line if the
+        partner did not quote this element in order to render properly always a
+        correct number of columns per line.'''
+        self.ensure_one()
+        lines = self.po_line_ids
+        res = []
+        for supp in self.requisition_id.supplier_ids:
+            line = lines.filtered(lambda rec, k=supp: rec.order_id.partner_id == k)
+            res.append(line)
+        return res
 
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders "

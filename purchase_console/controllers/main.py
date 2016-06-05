@@ -20,9 +20,8 @@ class Console(http.Controller):
         return fields_info
 
     @http.route(
-        '/purchase/console/<model("purchase.requisition"):requisition>/',
-        auth='user'
-        )
+        '/purchase/console/<model("purchase.requisition"):requisition>',
+        auth='user')
     def console(self, requisition):
         # Because is a basic algorithm to be used just for rendering.
         max_po_line_ids = len(requisition.supplier_ids)
@@ -35,3 +34,12 @@ class Console(http.Controller):
             'range': range,
             'get_help': self.get_help,
         })
+
+    # @http.route(
+    #     '/purchase/console/<model("purchase.requisition"):requisition>/<action>',  # noqa
+    #     type='json',
+    #     auth="public")
+    # def action(self, requisition, action):
+    #     print requisition
+    #     print action
+    #     return bool(requisition)

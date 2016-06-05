@@ -6,37 +6,42 @@
         <template id="purchase_console.layout" name="purchase requisition layout">
             <t t-call="web.layout">
                 <t t-set="head">
-                    <t t-call-assets="web.assets_common"/>
                     <t t-call-assets="web.assets_backend"/>
+                    <!--TODO: this should have its own assets_
+                    -->
+                    <script type="text/javascript" src="/purchase_console/static/js/console_frontend.js"></script>
                 </t>
             </t>
         </template>
         <template id="purchase_console.header" name="purchase requisition header">
             <div class="row">
-                <div class="btn-group btn-group-justified">
+                <div class="btn-group btn-group-justified js_action_management"
+                    t-att-data-id="requisition.id">
                     <div class="btn-group" role="group">
-                        <a class="btn btn-link" t-attf-href="/web#return_label=Console&amp;view_type=form&amp;model=#{requisition._name}&amp;id=#{requisition.id}&amp;action=#{'purchase_console.action_purchase_console'}"
+                        <a class="btn btn-link"
+                           t-attf-href="/web#return_label=Console&amp;view_type=form&amp;model=#{requisition._name}&amp;id=#{requisition.id}&amp;action=#{'purchase_console.action_purchase_console'}"
                             title='Edit in backend'>
                             <i class="fa  fa-step-backward"></i> Go to Backend</a>
                     </div>
                     <div class="btn-group" role="group">
-                        <button name="procure_products_from_suppliers" string="Procure" type="object" class="btn btn-warning">
+                        <button data-name="procure_products_from_suppliers" string="Procure"
+                                type="object" class="btn btn-warning js_action_btn">
                             <i class="fa fa-play-circle-o"></i> Procure</button>
                     </div>
                     <div class="btn-group" role="group">
-                        <button name="sent_suppliers" states="draft" class="btn btn-success">
+                        <button data-name="sent_suppliers" states="draft" class="btn js_action_btn btn-success">
                             <i class="fa fa-envelope" aria-hidden="true"></i> Send all RFQ</button>
                     </div>
                     <div class="btn-group" role="group">
-                        <button name="open_bid" states="in_progress" class="btn btn-primary">
+                        <button data-name="open_bid" states="in_progress" class="btn js_action_btn btn-primary">
                             <i class="fa fa-times" aria-hidden="true"></i> Finish Call</button>
                     </div>
                     <div class="btn-group" role="group">
-                        <button name="generate_po" states="open" type="object" class="btn btn-warning">
+                        <button data-name="generate_po" states="open" type="object" class="btn js_action_btn btn-warning">
                             <i class="fa fa-share" aria-hidden="true"></i> Generate PO's</button>
                     </div>
                     <div class="btn-group" role="group">
-                        <button name="cancel_requisition" states="draft,in_progress" class="btn btn-alert">
+                        <button data-name="cancel_requisition" states="draft,in_progress" class="btn js_action_btn btn-alert">
                             <i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Cancel Call</button>
                     </div>
                 </div>
@@ -121,7 +126,7 @@
         </template>
         <template id="purchase_console.line" name="purchase requisition console">
             <tr>
-                <td colspan="5" class="text-left"><span t-raw="line.product_id.display_name"/></td>
+                <td colspan="5" class="text-left" t-attf-title="Line ID {{line.id}}"><span t-raw="line.product_id.display_name"/></td>
                 <td rowspan="2">
                     <t t-call="purchase_console.options"/>
                 </td>

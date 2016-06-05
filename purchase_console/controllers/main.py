@@ -10,9 +10,14 @@
 ############################################################################
 
 from openerp import http
+from pprint import pprint
 
 
 class Console(http.Controller):
+
+    def get_help(self, record, fields=[]):
+        fields_info = record.fields_get(fields, attributes=['help', 'string'])
+        return fields_info
 
     @http.route(
         '/purchase/console/<model("purchase.requisition"):requisition>/',
@@ -28,4 +33,5 @@ class Console(http.Controller):
             'po_lines_width': po_lines_width,
             'po_lines_number': max_po_line_ids,
             'range': range,
+            'get_help': self.get_help,
         })

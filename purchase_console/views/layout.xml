@@ -15,8 +15,9 @@
             <div class="row">
                 <div class="btn-group btn-group-justified">
                     <div class="btn-group" role="group">
-                        <button name="open_backend_view" type="object" class="btn btn-link">
-                            <i class="fa  fa-step-backward"></i> Go to Backend</button>
+                        <a class="btn btn-link" t-attf-href="/web#return_label=Console&amp;view_type=form&amp;model=#{requisition._name}&amp;id=#{requisition.id}&amp;action=#{'purchase_console.action_purchase_console'}"
+                            title='Edit in backend'>
+                            <i class="fa  fa-step-backward"></i> Go to Backend</a>
                     </div>
                     <div class="btn-group" role="group">
                         <button name="procure_products_from_suppliers" string="Procure" type="object" class="btn btn-warning">

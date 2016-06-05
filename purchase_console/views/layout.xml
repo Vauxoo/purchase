@@ -13,9 +13,37 @@
         </template>
         <template id="purchase_console.header" name="purchase requisition header">
             <div class="row">
-                <div class="btn-group">
-                    <a class="btn btn-link">Go to full document</a>
-                    <a class="btn btn-link">Review</a>
+                <div class="col-md-12">
+                    <hr/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-sm-12">
+                    <div class="btn-group">
+                        <button name="open_backend_view" type="object" class="btn btn-link">
+                            <i class="fa  fa-step-backward"></i> Go to Backend</button>
+                        <button name="procure_products_from_suppliers" string="Procure" type="object" class="btn btn-warning">
+                            <i class="fa fa-play-circle-o"></i> Procure</button>
+                        <button name="sent_suppliers" states="draft" class="btn btn-success">
+                            <i class="fa fa-envelope" aria-hidden="true"></i> Send all RFQ</button>
+                        <button name="open_bid" states="in_progress" class="btn btn-primary">
+                            <i class="fa fa-times" aria-hidden="true"></i> Finish Call</button>
+                        <button name="generate_po" states="open" type="object" class="btn btn-warning">
+                            <i class="fa fa-share" aria-hidden="true"></i> Generate PO's</button>
+                        <button name="cancel_requisition" states="draft,in_progress" class="btn btn-alert">
+                            <i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Cancel Call</button>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <div class="input-group margin-bottom-sm">
+                      <input class="form-control" type="text" placeholder="Email address"/>
+                      <span class="input-group-addon"><i class="fa fa-search fa-fw" aria-hidden="true"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <hr/>
                 </div>
             </div>
         </template>
@@ -107,18 +135,37 @@
         </template>
         <template id="purchase_console.requisition" name="purchase requisition console">
             <t t-call="purchase_console.layout"></t>
-            <div class="container-fluid">
+            <div class="container-fluid front-console">
                 <t t-call="purchase_console.header"/>
-                <table class="table text-center table-striped table-bordered table-hover">
-                    <thead>
-                        <t t-call="purchase_console.table_header"/>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="requisition.line_ids" t-as="line">
-                            <t t-call="purchase_console.line"/>
-                        </t>
-                    </tbody>
-                </table>
+                <div class="row">
+                <!-- Nav tabs -->
+                <div class="card">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+                        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+                        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="home">
+                            <table class="table text-center table-striped table-bordered table-hover">
+                                <thead>
+                                    <t t-call="purchase_console.table_header"/>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="requisition.line_ids" t-as="line">
+                                        <t t-call="purchase_console.line"/>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="profile">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
+                        <div role="tabpanel" class="tab-pane" id="messages">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+                        <div role="tabpanel" class="tab-pane" id="settings">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passage..</div>
+                    </div>
+                </div>
+                </div>
             </div>
         </template>
     </data>

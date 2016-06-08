@@ -18,13 +18,28 @@
     "website": "http://www.vauxoo.com/",
     "category": "",
     "depends": [
-        "board",  # Just because we need some graphic stuff from here
-        "purchase_requisition",  # To have this concept available.
-        "procurement_jit_stock",  # Because the analysis include automatic
-        # procurement.
-        "purchase_double_validation",  # Because the process need this 2 steps.
-        "forecasting_smoothing_techniques",  # Because we need some widgets and
-        # computation process here
+        # PRODUCT HELPERS.
+        # Conceptually the master product management starts here.
+        "product_lifecycle",
+        # serial management unfucked.
+        "product_unique_serial",
+        # necessary to use it as filter and analysis.
+        "product_manufacturer",
+        # To have a correct and consistent management of codes in product.
+        "product_unique_default_code",
+        # Important tool to manage better the set of products
+        "product_properties_by_category",
+        # Stock modules.
+        # Because the analysis include automatic.
+        "procurement_jit_stock",
+        # Proper cost management.
+        "stock_landed_costs_segmentation",
+        # Stock
+        "purchase_rfq_xls",  # We need the original report in xls
+        # Because the process need this 2 steps.
+        "purchase_double_validation",
+        # To ensure a proper costing method configurable for all products.
+        "costing_method_settings",
         # "purchase_requisition_department",
         # "purchase_requisition_incoterms",
         # "purchase_requisition_line_description",
@@ -36,10 +51,16 @@
         # "purchase_requisition_remarks",
         # "purchase_requisition_supplier_list",
         # "purchase_requisition_type",
+        # Technical tools.
+        "message_post_model",  # Just because log properly some +2many
+        # computation process here
+        "forecasting_smoothing_techniques"
     ],
     "data": [
         'views/assets_backend.xml',
         'views/purchase_requisition_view.xml',
+        'views/layout.xml',
+        'wizard/fill_products_wizard_view.xml',
     ],
     "demo": [
     ],

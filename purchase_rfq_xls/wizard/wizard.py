@@ -43,8 +43,13 @@ class PurchaseQuotationWizard(models.TransientModel):
     @api.depends()
     def _get_purchase(self):
         context = dict(self._context)
-        active_ids = context['active_ids'][0]
-        self.purchase = self.env['purchase.order'].browse(active_ids)
+        if self.purchase:
+            # If you wired it throught context do not recompute.
+            return
+        if context.get('active_model') == 'purchase.order':
+            active_ids = context['active_ids'][0]
+            self.purchase = self.env['purchase.order'].browse(active_ids)
+            return
 
     template_action = fields.Selection([
         ('export', "Get a quotation template without prices"),
@@ -62,6 +67,19 @@ class PurchaseQuotationWizard(models.TransientModel):
     line_ids = fields.One2many(
         'purchase.quotation.wizard.line', 'wizard_id')
     purchase = fields.Many2one('purchase.order', compute='_get_purchase')
+
+    @api.model
+    def default_get(self, defaults):
+        res = super(PurchaseQuotationWizard, self).default_get(defaults)
+        context = dict(self._context)
+        # If comes from purchase.order the default is the active one.
+        if context.get('active_model') == 'purchase.order':
+            res['purchase'] = context['active_id']
+        # But if I wire the purchase the it is setted properlly (higher
+        # priority)
+        if context.get('purchase'):
+            res['purchase'] = context['purchase']
+        return res
 
     @api.multi
     @api.constrains('xls_name', 'xls_file')

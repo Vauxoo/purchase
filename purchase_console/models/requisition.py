@@ -9,72 +9,69 @@
 #    planned by: Nhomar Hernandez <nhomar@vauxoo.com>
 ############################################################################
 from openerp import models, fields, api, _
+from operator import attrgetter
 import openerp.addons.decimal_precision as dp
 
 
 class PurchaseRequisition(models.Model):
-    _inherit = 'purchase.requisition'
+    _name = 'purchase.requisition'
+    _inherit = ['purchase.requisition', 'message.post.show.all']
+    _excluded_states_po = ['cancel']
 
     @api.model
     def _get_suppliers(self):
         """Partners involved are the ones present as sellers in product and the
         ones manually added in purchase orders.
-        :return:
+        :return: recordset of suppliers
         """
-        supplier_orders_ids = []
-        if self.purchase_ids:
-            supplier_orders_ids = [
-                order.partner_id.id
-                for order in self.purchase_ids
-                if order.state not in ['cancel']]
-        products = []
-        if self.line_ids:
-            products = [line.product_id for line in self.line_ids]
-        suppliers = []
+        products = self.env['product.product']
+        purchases = self.purchase_ids.filtered(
+                lambda rec: rec.state not in self._excluded_states_po)
+        suppliers_pur = purchases.mapped('partner_id')
+        # If there is already some purchase better use the partners there.
+        if purchases:
+            return suppliers_pur
+        products = self.line_ids.mapped('product_id')
+        suppliers_prod = self.env['res.partner']
         for product in products:
-            if product.seller_ids:
-                suppliers = suppliers + \
-                    [supplier for supplier in product.seller_ids]
-        supplier_on_products_ids = [supplier.name.id for supplier in suppliers]
-        return supplier_orders_ids + supplier_on_products_ids
+            suppliers_prod += product.seller_ids.mapped('name')
+        partners = self.supplier_ids | suppliers_pur | suppliers_prod
+        # Always sorted in order to ensure a consistent behavior in the console
+        # when iterated.
+        return partners.sorted(key=attrgetter('name'))
 
-    @api.one
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
     def _get_partners_related(self):
         """Given a set of purchase products in a bid, compute the partners that
-        can be called on such bid.
-        :return:
+        should be called on such bid.
         """
-        # If it was not forced to be only one.
-        if not self.supplier_ids:
-            if self.exclusive != 'exclusive':
-                self.supplier_ids = self._get_suppliers()
+        for order in self:
+            order.supplier_ids = self._get_suppliers()
 
-    @api.one
+    @api.model
     def _create_po_given_partner(self):
         """When add a partner we assume you will ask for prices, then a PO is created.
         :return:
         """
-        supplier_on_orders_ids = []
-        if self.purchase_ids:
-            supplier_on_orders_ids = [
-                order.partner_id.id for order in self.purchase_ids]
-        for supplier in self.supplier_ids:
-            if supplier.id not in supplier_on_orders_ids:
-                self.make_purchase_order(supplier.id)
+        supplier_on_orders = self.purchase_ids.mapped('partner_id')
+        new_suppliers = supplier_on_orders - self.supplier_ids
+        # If there is a new supplier then new purchase orders are created.
+        for supplier in new_suppliers:
+            self.make_purchase_order(supplier.id)
 
     see_left_column = fields.Boolean()
+    user_id = fields.Many2one(help="User in charge of give follow up to this"
+                                   "requisition process.")
     supplier_ids = fields.Many2many('res.partner',
                                     compute="_get_partners_related",
-                                    track_visibility='always',
                                     copy=False,
+                                    domain=[('supplier', '=', True)],
                                     inverse='_create_po_given_partner')
     line_ids = fields.One2many('purchase.requisition.line',
                                'requisition_id',
                                'Products to Purchase',
                                states={'done': [('readonly', True)]},
-                               copy=True,
-                               track_visbility='onchange')
+                               copy=True)
     advantage_discount = fields.Float(default=0.02,
                                       help="When you start negociate, may be"
                                       "you want to show a price a little less"
@@ -82,32 +79,21 @@ class PurchaseRequisition(models.Model):
                                       "the system, here you can set such "
                                       "discount to conceptually just show it "
                                       "in the RFQ to the supplier.")
+    stock_to = fields.Char(readonly=True, help="Technical field: How much time"
+                                               " do you have of stock.")
 
-    @api.one
+    @api.multi
     def procure_products_from_suppliers(self):
         """Given a set of products compute procurements for products where
         those partners are suppliers.
-        TODO:
-        :return:
         """
-        pass
-        # if self.supplier_ids:
-        #     psi = self.env['product.supplierinfo'].search([('name',
-        #                                                     'in',
-        #                                                     [supplier.id
-        #                                                      for supplier in
-        #                                                      self.supplier_ids
-        #                                                      ])])
-        # for product in psi:
-        #     pass
-        #     # TODO: think this logic. It will be something complex :-(
+        for supplier in self.supplier_ids:
+            self.make_purchase_order(supplier.id)
 
     @api.multi
     def group_tenders(self):
-        """This method is a little wired in order to respect only this
+        """TODO: This method is a little wired in order to respect only this
         specified set of rules to group tenders.
-
-        TODO:
 
         1. Given a set of tender lists it will cancel them and join all
         line_ids.
@@ -116,29 +102,47 @@ class PurchaseRequisition(models.Model):
         is merged split them with some other logic.
         4. It will close all the other Purchase Orders and Requisitions done
         before and related with the merged ones.
-
-        :return:
         """
-        # requisition_obj = self.env['purchase.requisition']
-        # new_requisition_id = requisition_obj.create(cr, uid, {
-        #     'origin': procurement.origin,
-        #     'date_end': procurement.date_planned,
-        #     'warehouse_id': warehouse_id and warehouse_id[0] or False,
-        #     'company_id': procurement.company_id.id,
-        #     'procurement_id': procurement.id,
-        #     'picking_type_id': procurement.rule_id.picking_type_id.id,
-        # })
-
-        # line_ids = {
-        #     'line_ids': [(0, 0, {
-        #         'product_id': procurement.product_id.id,
-        #         'product_uom_id': procurement.product_uom.id,
-        #         'product_qty': procurement.product_qty
-
-        #     })],
-        # }
-        # return new_requisition_id, line_ids
         pass
+
+    @api.multi
+    def open_fill(self):
+        """This opens the fill wizard
+        @return: the RFQ tree view
+        """
+        imd = self.env['ir.model.data']
+        action = imd.xmlid_to_object('purchase_console.action_fill_wizard')
+        form_view_id = imd.xmlid_to_res_id(
+                'purchase_console.view_fill_products_form')
+
+        result = {
+            'name': action.name,
+            'help': action.help,
+            'type': action.type,
+            'views': [[form_view_id, 'form'],
+                      [False, 'graph'],
+                      [False, 'kanban'],
+                      [False, 'calendar'],
+                      [False, 'pivot']],
+            'target': action.target,
+            'context': action.context,
+            'res_model': action.res_model,
+        }
+        # result = {'type': 'ir.actions.act_window_close'}
+        return result
+
+    @api.multi
+    def open_console_web(self):
+        self.ensure_one()
+        rep_url = "/purchase/console/%i" % self.id
+        action = {
+            'type': 'ir.actions.act_url',
+            'name': "Web Tender",
+            'target': "new",
+            'context': self._context,
+            'url': rep_url,
+        }
+        return action
 
 
 class procurement_order(models.Model):
@@ -189,6 +193,7 @@ class purchase_order_line(models.Model):
         :return:
         """
         # Using SQL just to be sure all is really fast.
+        # TODO: This should be pointing to account_invoice_report.
         query = """(SELECT l.id, l.price_unit, i.date_invoice
                         FROM account_invoice_line as l
                     INNER JOIN account_invoice as i ON i.id=l.invoice_id
@@ -280,29 +285,41 @@ class PurchaseRequisitionLine(models.Model):
     _inherit = "purchase.requisition.line"
 
     def _get_consolidated_price(self, req):
-        return 1234.5
+        product = req.product_id
+        cost = product.material_cost + \
+            product.landed_cost + \
+            product.production_cost + \
+            product.subcontracting_cost
+        return cost
 
     @api.multi
     def _get_line_fields(self):
         for req in self:
             req.consolidated_price = self._get_consolidated_price(req)
 
-    def get_time_stock(self, req):
-        return "3 weeks"
-
-    @api.multi
-    def _get_time_stock_to(self):
-        for req in self:
-            req.stock_to = self.get_time_stock(req)
-
     @api.multi
     def _get_po_line(self):
+        excluded = self.env['purchase.requisition']._excluded_states_po
         for req in self:
             purl = req.env['purchase.order.line']
             po_line_ids = req.requisition_id.po_line_ids.ids
-            req.po_line_ids = purl.search([('id', 'in', po_line_ids),
-                                          ('product_id', '=',
-                                              req.product_id.id)])
+            domain = [('id', 'in', po_line_ids),
+                      ('product_id', '=', req.product_id.id),
+                      ('order_id.state', 'not in', excluded)]
+            req.po_line_ids = purl.search(domain)
+
+    @api.model
+    def get_po_line_render(self):
+        '''For render reasons we need have a False record per line if the
+        partner did not quote this element in order to render properly always a
+        correct number of columns per line.'''
+        self.ensure_one()
+        lines = self.po_line_ids
+        res = []
+        for supp in self.requisition_id.supplier_ids:
+            line = lines.filtered(lambda rec, k=supp: rec.order_id.partner_id == k)
+            res.append(line)
+        return res
 
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders "
@@ -318,7 +335,7 @@ class PurchaseRequisitionLine(models.Model):
                                       "other expenses.",
                                       compute="_get_line_fields")
     # TODO: Put this in the stock_forecast module.
-    forecast_qty = fields.Float('Proj. Qty', readonly=True,
+    forecast_qty = fields.Float('Projected', readonly=True,
                                 help="Technical field: The quantity "
                                 "projected with the forecast module by any"
                                 " mean.")
@@ -326,7 +343,3 @@ class PurchaseRequisitionLine(models.Model):
                          help="Technical field: Stock when the forecast "
                          " was computed, necessary to know if you really"
                          "can live with stock actual or not.")
-    stock_to = fields.Char(readonly=True,
-                           help="Technical field: How much time do you"
-                           " have of stock. ",
-                           compute="_get_time_stock_to")

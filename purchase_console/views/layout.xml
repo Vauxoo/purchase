@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim:fdn=3:
+-->
+<openerp>
+    <data>
+        <template id="purchase_console.layout" name="purchase requisition layout">
+            <t t-call="web.layout">
+                <t t-set="head">
+                    <t t-call-assets="web.assets_backend"/>
+                    <!--TODO: this should have its own assets_
+                    -->
+                    <script type="text/javascript" src="/purchase_console/static/js/console_frontend.js"></script>
+                </t>
+            </t>
+        </template>
+        <template id="purchase_console.header" name="purchase requisition header">
+            <div class="row">
+                <div class="btn-group btn-group-justified js_action_management"
+                    t-att-data-id="requisition.id">
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-link"
+                           t-attf-href="/web#return_label=Console&amp;view_type=form&amp;model=#{requisition._name}&amp;id=#{requisition.id}&amp;action=#{'purchase_console.action_purchase_console'}"
+                            title='Edit in backend'>
+                            <i class="fa  fa-step-backward"></i> Go to Backend</a>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button data-name="procure_products_from_suppliers" string="Procure"
+                                type="object" class="btn btn-warning js_action_btn">
+                            <i class="fa fa-play-circle-o"></i> Procure</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button data-name="sent_suppliers" states="draft" class="btn js_action_btn btn-success">
+                            <i class="fa fa-envelope" aria-hidden="true"></i> Send all RFQ</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button data-name="open_bid" states="in_progress" class="btn js_action_btn btn-primary">
+                            <i class="fa fa-times" aria-hidden="true"></i> Finish Call</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button data-name="generate_po" states="open" type="object" class="btn js_action_btn btn-warning">
+                            <i class="fa fa-share" aria-hidden="true"></i> Generate PO's</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button data-name="cancel_requisition" states="draft,in_progress" class="btn js_action_btn btn-alert">
+                            <i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Cancel Call</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template id="purchase_console.options" name="purchase requisition options">
+            <div class="row">
+                <t t-foreach="line.get_po_line_render()" t-as="element">
+                    <!-- TODO: Find a proper way of avoid call get_help every
+                         time I render the file it should be called only one time
+                         -->
+                    <t t-set="helps"
+                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
+                    <div t-attf-class="col-md-{{po_lines_width}}">
+                        <span t-att-title="helps['product_qty']['help']" t-raw="element.product_qty"/>
+                    </div>
+                </t>
+            </div>
+            <div class="row">
+                <t t-foreach="line.get_po_line_render()" t-as="element">
+                    <!-- TODO: Find a proper way of avoid call get_help every
+                         time I render the file it should be called only one time
+                         -->
+                    <t t-set="helps"
+                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
+                    <div t-attf-class="col-md-{{po_lines_width}}">
+                        <span t-att-title="helps['price_unit']['help']" t-raw="element.price_unit"/>
+                    </div>
+                </t>
+            </div>
+            <div class="row">
+                <t t-foreach="line.get_po_line_render()" t-as="element">
+                    <!-- TODO: Find a proper way of avoid call get_help every
+                         time I render the file it should be called only one time
+                         -->
+                    <t t-set="helps"
+                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
+                    <div t-attf-class="col-md-{{po_lines_width}}">
+                        <span t-att-title="helps['last_price']['help']" t-raw="element.last_price"/>
+                    </div>
+                </t>
+            </div>
+            <div class="row">
+                <t t-foreach="line.get_po_line_render()" t-as="element">
+                    <!-- TODO: Find a proper way of avoid call get_help every
+                         time I render the file it should be called only one time
+                         -->
+                    <t t-set="helps"
+                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
+                    <div t-attf-class="col-md-{{po_lines_width}}">
+                        <span t-att-title="helps['accounting_cost']['help']" t-raw="element.accounting_cost"/>
+                    </div>
+                </t>
+            </div>
+        </template>
+        <template id="purchase_console.table_header" name="purchase requisition console">
+            <tr>
+                <th colspan="5">
+                    <div class="input-group">
+                      <input class="form-control" type="text" placeholder="Search a product"/>
+                      <span class="input-group-addon"><i class="fa fa-search fa-fw" aria-hidden="true"></i></span>
+                    </div>
+                </th>
+                <th rowspan="2">
+                    <div class="row">
+                        <t t-foreach="requisition.supplier_ids" t-as="supplier">
+                            <div t-attf-class="col-md-{{po_lines_width}}">
+                                <img t-attf-src="/web/binary/image?model=res.partner&#38;id={{supplier.id}}&#38;field=image_small"
+                                    class="img img-responsive" t-att-title="supplier.display_name"/>
+                            </div>
+                        </t>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th><span>Quantity</span></th>
+                <th><span>Forcasted</span></th>
+                <th><span>Actual Stock</span></th>
+                <th><span>Consolidate Price</span></th>
+                <th><span>Scheduled</span></th>
+            </tr>
+        </template>
+        <template id="purchase_console.line" name="purchase requisition console">
+            <tr>
+                <td colspan="5" class="text-left" t-attf-title="Line ID {{line.id}}"><span t-raw="line.product_id.display_name"/></td>
+                <td rowspan="2">
+                    <t t-call="purchase_console.options"/>
+                </td>
+            </tr>
+            <tr>
+                <td><span t-raw="line.product_qty"/></td>
+                <td><span t-raw="line.forecast_qty"/></td>
+                <td><span t-raw="line.stock"/></td>
+                <td><span t-raw="line.consolidated_price"/></td>
+                <td><span t-raw="line.schedule_date"/></td>
+            </tr>
+        </template>
+        <template id="purchase_console.requisition" name="purchase requisition console">
+            <t t-call="purchase_console.layout"></t>
+            <div class="container-fluid front-console">
+                <t t-call="purchase_console.header"/>
+                <div class="row">
+                <!-- Nav tabs -->
+                <div class="card">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Graphical</a></li>
+                        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+                        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Help</a></li>
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="home">
+                            <table class="table text-center table-striped table-bordered table-hover">
+                                <thead>
+                                    <t t-call="purchase_console.table_header"/>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="requisition.line_ids" t-as="line">
+                                        <t t-call="purchase_console.line"/>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="profile">
+Lorem Ipsum is simply dummy text of
+the printing and typesetting industry. Lorem Ipsum has been the industry's
+standard dummy text ever since the 1500s, when an unknown printer took a galley
+of type and scrambled it to make a type specimen book.
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="messages">
+Lorem Ipsum is simply dummy text of
+the printing and typesetting industry. Lorem Ipsum has been the industry's
+standard dummy text ever since the 1500s, when an unknown printer took a galley
+of type and scrambled it to make a type specimen book. It has survived not only
+five centuries, but also the leap into electronic typesetting, remaining
+essentially unchanged. It was popularised in the 1960s with the release of
+Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
+publishing software like Aldus PageMaker including versions of Lorem
+Ipsum.
+                        </div>
+                        <div role="tabpanel" class="tab-pane"
+                            id="settings">Lorem Ipsum is simply dummy text of
+the printing and typesetting industry. Lorem Ipsum has been the industry's
+standard dummy text ever since the 1500s, when an unknown printer took a galley
+of type and scrambled it to make a type specimen book. It has survived not only
+five centuries, but also the leap into electronic typesetting, remaining
+essentially unchanged. It was popularised in the 1960s with the release of
+Letraset sheets containing Lorem Ipsum passage..
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </template>
+    </data>
+</openerp>

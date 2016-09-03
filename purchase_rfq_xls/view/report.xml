@@ -12,7 +12,6 @@
             file="purchase_rfq_xls.report_template"
             string="Update a Quotation Prices"
             report_type="qweb-pdf"
-            attachment_use="False"
             attachment=""
             menu="False"
             />

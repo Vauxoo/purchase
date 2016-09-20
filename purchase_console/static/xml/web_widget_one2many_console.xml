@@ -1,6 +1,5 @@
 <templates>
     <t t-name="ListView.row.one2many_headers">
-        <t t-log="widget"/>
         <t t-foreach="partners" t-as="partner">
             <div t-att-style="'width: ' + (Math.round(100/partners.length - 0.5))  + '%; float: left'" class="text-center">
                 <span><h3 class="header-title1 text-center"><t t-esc="partner[1]"></t></h3></span>

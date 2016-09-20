@@ -92,7 +92,8 @@
                             <page string="Console">
                                 <field name="line_ids" group_line="po_line_ids"
                                        attrs="{'readonly': [('state','not in',('draft'))]}">
-                                    <tree string="Products" editable="bottom">
+                                    <!-- <tree string="Products" editable="bottom"> -->
+                                    <tree string="Products">
                                         <field name="product_id"
                                                on_change="onchange_product_id(product_id,product_uom_id,parent.account_analytic_id,account_analytic_id,parent.schedule_date,schedule_date)"/>
                                         <field name="product_uom_id" groups="product.group_uom" string="UoM"/>
@@ -196,6 +197,42 @@
         </record>
         <record id="purchase.menu_purchase_form_action" model="ir.ui.menu">
             <field name="sequence">3</field>
+        </record>
+
+        <record id="purchase_requisition_line_form" model="ir.ui.view">
+            <field name="name">purchase.requisition.line.form</field>
+            <field name="model">purchase.requisition.line</field>
+            <field eval="1" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Choose Supplier">
+                <group>
+                    <group>
+                        <field name="product_id"/>
+                        <field name="consolidated_price"/>
+                        <field name="account_analytic_id"/>
+                        <field name="forecast_qty"/>
+                    </group>
+                    <group>
+                        <field name="product_uom_id"/>
+                        <field name="product_qty"/>
+                        <field name="schedule_date"/>
+                        <field name="stock"/>
+                    </group>
+                </group>
+                    <field name="po_line_ids">
+                        <tree string="Purchase Order Lines" create="false" colors="blue:state == 'confirmed';gray:state == 'cancel'">
+                            <field name="partner_id" string="Supplier"/>
+                            <field name="product_qty"/>
+                            <field name="last_price"/>
+                            <field name="price_bid"/>
+                            <field name="price_unit"/>
+                            <field name="accounting_cost"/>
+                            <field name="state" invisible="1"/>
+                        </tree>
+                    </field>
+
+                </form>
+            </field>
         </record>
 
     </data>

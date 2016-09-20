@@ -52,16 +52,19 @@
             <div class="row rqn_line_polines">
                 <t t-foreach="line.get_po_line_render()" t-as="element">
                     <t t-set="helps"
-                    t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
+                    t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'price_bid', 'last_price'])"/>
                     <div t-attf-class="col-md-{{po_lines_width}}" t-att-id="element.id">
                         <div>
                             <span t-att-title="helps['product_qty']['help']" t-raw="element.product_qty"/>
                         </div>
                         <div>
-                            <span t-att-title="helps['price_unit']['help']" t-raw="element.price_unit"/>
+                            <span t-att-title="helps['last_price']['help']" t-raw="element.last_price"/>
                         </div>
                         <div>
-                            <span t-att-title="helps['last_price']['help']" t-raw="element.last_price"/>
+                            <span t-att-title="helps['price_bid']['help']" t-raw="element.price_bid"/>
+                        </div>
+                        <div>
+                            <span t-att-title="helps['price_unit']['help']" t-raw="element.price_unit"/>
                         </div>
                         <div>
                             <span t-att-title="helps['accounting_cost']['help']" t-raw="element.accounting_cost"/>

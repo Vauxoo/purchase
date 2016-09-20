@@ -4,20 +4,20 @@ openerp.purchase_console = function(instance) {
     var QWeb = instance.web.qweb;
 
     instance.web.list.One2manyColumns = instance.web.list.Column.extend({
-        init: function (id, tag, attrs) {
-            _.extend(attrs, {
-                id: id,
-                tag: tag,
-            });
-            this.modifiers = attrs.modifiers ? JSON.parse(attrs.modifiers) : {};
-            delete attrs.modifiers;
-            _.extend(this, attrs);
-            if (this.modifiers.tree_invisible) {
-                this.invisible = '1';
-            } else { delete this.invisible; }
-        },
-
+        /**
+        *
+        * @param row_data record whose values should be displayed in the cell
+        * @param {Object} [options]
+        * @param {String} [options.value_if_empty=''] what to display if the field's value is ``false``
+        * @param {Boolean} [options.process_modifiers=true] should the modifiers be computed ?
+        * @param {String} [options.model] current record's model
+        * @param {Number} [options.id] current record's id
+        * @return {String}
+        */
         format: function (row_data, options) {
+            console.log(this);
+            console.log(options);
+            console.log(row_data);
             var self = this;
             if (!row_data[this.id] || !row_data[this.id].value) {
                 return 'No Data';

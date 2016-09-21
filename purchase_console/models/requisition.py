@@ -297,15 +297,19 @@ class PurchaseRequisitionLine(models.Model):
             req.consolidated_price = self._get_consolidated_price(req)
 
     @api.multi
+    @api.depends('requisition_id', 'requisition_id.po_line_ids')
     def _compute_po_line(self):
+        """In order to return purchase_order_lines filtered by
+            product_id = requisition_line.product_id
+        """
         excluded = self.env['purchase.requisition']._excluded_states_po
         for line in self:
-            purl = line.env['purchase.order.line']
-            po_line_ids = line.requisition_id.po_line_ids.ids
-            domain = [('id', 'in', po_line_ids),
-                      ('product_id', '=', line.product_id.id),
-                      ('order_id.state', 'not in', excluded)]
-            line.po_line_ids = purl.search(domain)
+            # Requisition_id.po_line_ids already has all purchases_order_lines
+            # of all purchase orders related to requisition_id
+            po_line_ids = line.requisition_id.po_line_ids.filtered(
+                lambda r: r.product_id == line.product_id and
+                r.order_id.state not in excluded)
+            line.po_line_ids = po_line_ids
 
     @api.model
     def get_po_line_render(self):

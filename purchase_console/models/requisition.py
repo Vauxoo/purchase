@@ -84,12 +84,33 @@ class PurchaseRequisition(models.Model):
                                                " do you have of stock.")
 
     @api.multi
+    def confirm_call(self):
+        self.ensure_one()
+        return self.write({'state': 'in_progress'})
+
+    @api.model
+    def check_rfq(self):
+        """Check if can generate Purchases quotes
+        if multiple_rfq_per_supplier is False and exists any purchase order
+        with partner of any in supplier_ids can generate more rfq
+        """
+        self.ensure_one()
+        for supplier in self.supplier_ids:
+            if not self.multiple_rfq_per_supplier and supplier.id in filter(
+                lambda x: x, [rfq.state != 'cancel' and rfq.partner_id.id or
+                              None for rfq in self.purchase_ids]):
+                return False
+        return True
+
+    @api.multi
     def procure_products_from_suppliers(self):
         """Given a set of products compute procurements for products where
         those partners are suppliers.
         """
+        self.ensure_one()
         for supplier in self.supplier_ids:
             self.make_purchase_order(supplier.id)
+        return True
 
     @api.multi
     def group_tenders(self):
@@ -186,6 +207,21 @@ class ProcurementOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     precision = dp.get_precision('Product Unit of Measure')
+
+    @api.multi
+    def update_line(self, data):
+        self.ensure_one()
+        pol = self.pool.get('purchase.order.line')
+        line, parent = self, self.order_id
+        if data.get('name') == 'product_qty':
+            values = pol.onchange_product_id(
+                self.env.cr, self.env.uid, self.id,
+                parent.pricelist_id.id,
+                line.product_id.id, float(data.get('value')),
+                line.product_uom.id, parent.partner_id.id, parent.date_order,
+                parent.fiscal_position.id, line.date_planned, line.name,
+                False, parent.state, self.env.context).get('value')
+            print line.write(values)
 
     def get_last_inv_line(self):
         """Last price is the last price paid for this product invoice based or

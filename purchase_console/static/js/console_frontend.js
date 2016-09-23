@@ -9,11 +9,18 @@
         openerp.jsonRpc(
             '/purchase/console/' + rqn_data.id + '/' + self.data('name'), 'call',
             {'options': []})
-            .then(function (result) {
-                console.log('ok... ');
-                console.log(result);
-                $('.front-console').removeClass('loading');
-                location.reload();
+            .then(function (data) {
+                if (data.result === true){
+                    console.log('ok... ');
+                    console.log(data);
+                    $('.front-console').removeClass('loading');
+                    location.reload();
+                }
+                else if (data.result === false){
+                    console.log('Not ok... ');
+                    console.log(data);
+                    $('.front-console').removeClass('loading');
+                }
             }).fail(function (err, data) {
                 console.log('Not ok... ');
                 console.log(err);
@@ -41,5 +48,42 @@
             $("#search_summary").addClass('invisible');
         }
         event.preventDefault();
+    });
+
+
+    $(document).on('dblclick', '.edit-span', function (){
+        console.log('##');
+        var span = $(this);
+        var input = span.next();
+        input.show().removeAttr('disabled');
+        input.focus();
+        span.hide().attr({'disabled': 'disabled'});
+    });
+
+    $(document).on('keypress', '.rqn_line_display_name .rqn_line_polines .edit-input', function (event) {
+        if (event.which == 13) {
+            console.log('###');
+            var input = $(this);
+            var name = input.attr('name');
+            var id = input.parents('.order_line').attr('id');
+            var span = input.parent().find('span');
+
+        openerp.jsonRpc(
+            '/update/line/' + id, 'call',
+            {
+                'id': id,
+                'name': name,
+                'value': input.val()
+            }).then(function (data) {
+                if (data.result === true){
+                    span.text(input.val());
+                }
+                else if (data.result === false){
+                }
+            }).fail(function (err, data) {
+            });
+            span.show().removeAttr('disabled');
+            input.hide().attr({'disabled': 'disabled'});
+        }
     });
 })();

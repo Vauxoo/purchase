@@ -64,3 +64,7 @@
     z-index: 4;
     animation: spin 1.5s infinite linear;
 }
+.edit-input.form-control.input-sm{
+    margin: auto;
+    width: inherit;
+}

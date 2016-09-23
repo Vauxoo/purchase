@@ -24,7 +24,7 @@
                             title='Edit in backend'>
                             <i class="fa  fa-step-backward"></i> Go to Backend</a>
                     </div>
-                    <div class="btn-group" role="group">
+                    <div t-if="requisition.check_rfq()" class="btn-group" role="group">
                         <button data-name="procure_products_from_suppliers" string="Procure"
                                 type="object" class="btn btn-warning js_action_btn">
                             <i class="fa fa-play-circle-o"></i> Procure</button>
@@ -33,15 +33,19 @@
                         <button data-name="sent_suppliers" states="draft" class="btn js_action_btn btn-success">
                             <i class="fa fa-envelope" aria-hidden="true"></i> Send all RFQ</button>
                     </div>
+                    <div t-if="requisition.state == 'draft'" class="btn-group" role="group">
+                        <button data-name="confirm_call" states="draft" class="btn js_action_btn btn-alert">
+                            <i class="fa fa-check" aria-hidden="true"></i> Confirm Call</button>
+                    </div>
                     <div class="btn-group" role="group">
                         <button data-name="open_bid" states="in_progress" class="btn js_action_btn btn-primary">
                             <i class="fa fa-times" aria-hidden="true"></i> Finish Call</button>
                     </div>
-                    <div class="btn-group" role="group">
+                    <div t-if="requisition.state == 'open'" class="btn-group" role="group">
                         <button data-name="generate_po" states="open" type="object" class="btn js_action_btn btn-warning">
                             <i class="fa fa-share" aria-hidden="true"></i> Generate PO's</button>
                     </div>
-                    <div class="btn-group" role="group">
+                    <div t-if="requisition.state in ('draft', 'in_progress')" class="btn-group" role="group">
                         <button data-name="cancel_requisition" states="draft,in_progress" class="btn js_action_btn btn-alert">
                             <i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Cancel Call</button>
                     </div>
@@ -53,21 +57,31 @@
                 <t t-foreach="line.get_po_line_render()" t-as="element">
                     <t t-set="helps"
                     t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'price_bid', 'last_price'])"/>
-                    <div t-attf-class="col-md-{{po_lines_width}}" t-att-id="element.id">
+                    <div t-attf-class="order_line col-md-{{po_lines_width}}" t-att-id="element.id">
                         <div>
-                            <span t-att-title="helps['product_qty']['help']" t-raw="element.product_qty"/>
+                            <span t-att-title="'%s: %s' % (helps['product_qty']['string'], helps['product_qty']['help'])"
+                                t-raw="element.product_qty" class="edit-span"/>
+                            <input class="edit-input form-control input-sm" type="text" name="product_qty" t-att-value="element.product_qty" style="display: none;" disabled=""/>
                         </div>
                         <div>
-                            <span t-att-title="helps['last_price']['help']" t-raw="element.last_price"/>
+                            <span t-att-title="'%s: %s' % (helps['last_price']['string'], helps['last_price']['help'])"
+                                t-raw="element.last_price" class=""/>
+                            <input class="form-control input-sm" type="text" name="last_price" t-att-value="element.last_price" style="display: none;" disabled=""/>
                         </div>
                         <div>
-                            <span t-att-title="helps['price_bid']['help']" t-raw="element.price_bid"/>
+                            <span t-att-title="'%s: %s' % (helps['price_bid']['string'], helps['price_bid']['help'])"
+                                t-raw="element.price_bid" class="edit-span"/>
+                            <input class="edit-input form-control input-sm" type="text" name="price_bid" t-att-value="element.price_bid" style="display: none;" disabled=""/>
                         </div>
                         <div>
-                            <span t-att-title="helps['price_unit']['help']" t-raw="element.price_unit"/>
+                            <span t-att-title="'%s: %s' % (helps['price_unit']['string'], helps['price_unit']['help'])"
+                                t-raw="element.price_unit" class="edit-span"/>
+                            <input class="edit-input form-control input-sm" type="text" name="price_unit" t-att-value="element.price_unit" style="display: none;" disabled=""/>
                         </div>
                         <div>
-                            <span t-att-title="helps['accounting_cost']['help']" t-raw="element.accounting_cost"/>
+                            <span t-att-title="'%s: %s' % (helps['accounting_cost']['string'], helps['accounting_cost']['help'])"
+                                t-raw="element.accounting_cost" class="edit-span"/>
+                            <input class="form-control input-sm" type="text" name="accounting_cost" t-att-value="element.accounting_cost" style="display: none;" disabled=""/>
                         </div>
                     </div>
                 </t>

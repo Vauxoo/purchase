@@ -10,6 +10,7 @@
 ############################################################################
 
 from openerp import http
+from openerp.http import request
 
 
 class Console(http.Controller):
@@ -37,16 +38,37 @@ class Console(http.Controller):
 
     @http.route(
         '/purchase/console/<model("purchase.requisition"):requisition>/<action>',  # noqa
-        type='json',
-        auth="public")
+        type='json', auth="public")
     def action(self, requisition, action, **data):
         """Controller to manage the front end actions:
             Procure: 'procure_products_from_suppliers',
             Send RFQ: 'sent_suppliers',
+            Confirm Call: 'confirm_call',
             Open Bid: 'open_bid',
             Generate PO: 'generate_po',
             Cancel all: 'cancel_requisition'
         """
+        res = {'result': False}
         if hasattr(requisition, action):
-            getattr(requisition, action)()
-        return bool(requisition)
+            try:
+                res['message'] = getattr(requisition, action)()
+                res['result'] = True
+            except Exception as e:
+                res['result'] = False
+                res['message'] = e.message
+        return res
+
+    @http.route(
+        '/update/line/<model("purchase.order.line"):line>',
+        auth='user', type="json")
+    def update_line(self, line, **data):
+        pol = request.registry('purchase.order.line')
+        cr, uid, context = request.cr, request.uid, request.context
+        res = {'result': False}
+        try:
+            pol.update_line(cr, uid, line.id, data, context=context)
+            res['result'] = True
+        except Exception as e:
+            res['result'] = False
+            res['message'] = e.message
+        return res

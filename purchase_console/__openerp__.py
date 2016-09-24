@@ -12,7 +12,8 @@
 {
     "name": "Purchase Console",
     "summary": "Manage your purchase planning wasn't so simple ever.",
-    "version": "1.0.0",
+    "version": "8.0.0.0.2",
+    "license": "AGPL-3",
     "author": "Vauxoo",
     "sequence": 100,
     "website": "http://www.vauxoo.com/",
@@ -70,9 +71,6 @@
         'static/xml/web_widget_one2many_console.xml',
     ],
     "js": [
-    ],
-    "css": [
-        'static/css/console.css',
     ],
     "installable": True,
     "application": True,

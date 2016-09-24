@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- vim:fdn=3:
--->
 <openerp>
-    <data>
+    <data noupdate="1">
         <template id="assets_backend" name="purchase requisition assets" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
                 <link rel="stylesheet" href="/purchase_console/static/css/console.css"/>
-                <script type="text/javascript" src="/purchase_console/static/js/console.js"></script>
                 <script type="text/javascript" src="/purchase_console/static/js/web_widget_one2many_console.js"></script>
             </xpath>
         </template>
+
+        <!-- <record id="action_console_home_page" model="ir.actions.client"> -->
+        <!--         <field name="name">Console Homepage</field> -->
+        <!--         <field name="tag">console_homepage</field> -->
+        <!-- </record> -->
+        <!-- <menuitem id="action_console_home_page" name="Console Homepage" parent="purchase.menu_procurement_management" -->
+        <!--     action="action_console_home_page"/> -->
     </data>
 </openerp>

@@ -26,7 +26,7 @@ class PurchaseRequisition(models.Model):
         """
         products = self.env['product.product']
         purchases = self.purchase_ids.filtered(
-                lambda rec: rec.state not in self._excluded_states_po)
+            lambda rec: rec.state not in self._excluded_states_po)
         suppliers_pur = purchases.mapped('partner_id')
         # If there is already some purchase better use the partners there.
         if purchases:
@@ -113,7 +113,7 @@ class PurchaseRequisition(models.Model):
         imd = self.env['ir.model.data']
         action = imd.xmlid_to_object('purchase_console.action_fill_wizard')
         form_view_id = imd.xmlid_to_res_id(
-                'purchase_console.view_fill_products_form')
+            'purchase_console.view_fill_products_form')
 
         result = {
             'name': action.name,
@@ -300,13 +300,13 @@ class PurchaseRequisitionLine(models.Model):
     @api.multi
     def _get_po_line(self):
         excluded = self.env['purchase.requisition']._excluded_states_po
-        for req in self:
-            purl = req.env['purchase.order.line']
-            po_line_ids = req.requisition_id.po_line_ids.ids
+        for line in self:
+            purl = line.env['purchase.order.line']
+            po_line_ids = line.requisition_id.po_line_ids.ids
             domain = [('id', 'in', po_line_ids),
-                      ('product_id', '=', req.product_id.id),
+                      ('product_id', '=', line.product_id.id),
                       ('order_id.state', 'not in', excluded)]
-            req.po_line_ids = purl.search(domain)
+            line.po_line_ids = purl.search(domain)
 
     @api.model
     def get_po_line_render(self):
@@ -317,7 +317,8 @@ class PurchaseRequisitionLine(models.Model):
         lines = self.po_line_ids
         res = []
         for supp in self.requisition_id.supplier_ids:
-            line = lines.filtered(lambda rec, k=supp: rec.order_id.partner_id == k)
+            line = lines.filtered(
+                lambda rec, k=supp: rec.order_id.partner_id == k)
             res.append(line)
         return res
 
@@ -342,4 +343,4 @@ class PurchaseRequisitionLine(models.Model):
     stock = fields.Float(readonly=True,
                          help="Technical field: Stock when the forecast "
                          " was computed, necessary to know if you really"
-                         "can live with stock actual or not.")
+                         " can live with stock actual or not.")

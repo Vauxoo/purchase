@@ -9,14 +9,13 @@
 #    planned by: Nhomar Hernandez <nhomar@vauxoo.com>
 ############################################################################
 from openerp import models, fields, api
-import openerp.addons.decimal_precision as dp
 
 
 class FillProducts(models.TransientModel):
     _name = 'fill.products'
 
     name = fields.Many2one('res.partner', string='Partner', required=True,
-                           help='Lood all products related to this partner')
+                           help='Load all products related to this partner')
     procure = fields.Boolean(help='Use the procurement rule to set the '
                                   'quantity on lines, False if you will '
                                   ' fill manually the quantities.')

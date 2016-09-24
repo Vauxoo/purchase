@@ -10,7 +10,6 @@
 ############################################################################
 
 from openerp import http
-from pprint import pprint
 
 
 class Console(http.Controller):
@@ -26,12 +25,11 @@ class Console(http.Controller):
         # Because is a basic algorithm to be used just for rendering.
         max_po_line_ids = len(requisition.supplier_ids)
         po_lines_width = int(12.00/max_po_line_ids)
-        ##########################
+
         return http.request.render('purchase_console.requisition', {
             'requisition': requisition,
             'po_lines_width': po_lines_width,
             'po_lines_number': max_po_line_ids,
-            'range': range,
             'get_help': self.get_help,
         })
 

@@ -1,3 +1,4 @@
 forecast https://github.com/Vauxoo/forecast.git
 web https://github.com/Vauxoo/web.git
+stock-logistics-workflow git@github.com:Vauxoo/stock-logistics-workflow.git
 

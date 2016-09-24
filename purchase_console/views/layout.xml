@@ -6,6 +6,7 @@
         <template id="purchase_console.layout" name="purchase requisition layout">
             <t t-call="web.layout">
                 <t t-set="head">
+                    <t t-call-assets="web.assets_common"/>
                     <t t-call-assets="web.assets_backend"/>
                     <!--TODO: this should have its own assets_
                     -->
@@ -48,51 +49,23 @@
             </div>
         </template>
         <template id="purchase_console.options" name="purchase requisition options">
-            <div class="row">
+            <div class="row rqn_line_polines">
                 <t t-foreach="line.get_po_line_render()" t-as="element">
-                    <!-- TODO: Find a proper way of avoid call get_help every
-                         time I render the file it should be called only one time
-                         -->
                     <t t-set="helps"
-                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
-                    <div t-attf-class="col-md-{{po_lines_width}}">
-                        <span t-att-title="helps['product_qty']['help']" t-raw="element.product_qty"/>
-                    </div>
-                </t>
-            </div>
-            <div class="row">
-                <t t-foreach="line.get_po_line_render()" t-as="element">
-                    <!-- TODO: Find a proper way of avoid call get_help every
-                         time I render the file it should be called only one time
-                         -->
-                    <t t-set="helps"
-                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
-                    <div t-attf-class="col-md-{{po_lines_width}}">
-                        <span t-att-title="helps['price_unit']['help']" t-raw="element.price_unit"/>
-                    </div>
-                </t>
-            </div>
-            <div class="row">
-                <t t-foreach="line.get_po_line_render()" t-as="element">
-                    <!-- TODO: Find a proper way of avoid call get_help every
-                         time I render the file it should be called only one time
-                         -->
-                    <t t-set="helps"
-                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
-                    <div t-attf-class="col-md-{{po_lines_width}}">
-                        <span t-att-title="helps['last_price']['help']" t-raw="element.last_price"/>
-                    </div>
-                </t>
-            </div>
-            <div class="row">
-                <t t-foreach="line.get_po_line_render()" t-as="element">
-                    <!-- TODO: Find a proper way of avoid call get_help every
-                         time I render the file it should be called only one time
-                         -->
-                    <t t-set="helps"
-                       t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
-                    <div t-attf-class="col-md-{{po_lines_width}}">
-                        <span t-att-title="helps['accounting_cost']['help']" t-raw="element.accounting_cost"/>
+                    t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'last_price'])"/>
+                    <div t-attf-class="col-md-{{po_lines_width}}" t-att-id="element.id">
+                        <div>
+                            <span t-att-title="helps['product_qty']['help']" t-raw="element.product_qty"/>
+                        </div>
+                        <div>
+                            <span t-att-title="helps['price_unit']['help']" t-raw="element.price_unit"/>
+                        </div>
+                        <div>
+                            <span t-att-title="helps['last_price']['help']" t-raw="element.last_price"/>
+                        </div>
+                        <div>
+                            <span t-att-title="helps['accounting_cost']['help']" t-raw="element.accounting_cost"/>
+                        </div>
                     </div>
                 </t>
             </div>
@@ -100,9 +73,10 @@
         <template id="purchase_console.table_header" name="purchase requisition console">
             <tr>
                 <th colspan="5">
-                    <div class="input-group">
-                      <input class="form-control" type="text" placeholder="Search a product"/>
+                    <div class="input-group search-div">
+                      <input id="search_box" class="form-control" type="text" placeholder="Search a product"/>
                       <span class="input-group-addon"><i class="fa fa-search fa-fw" aria-hidden="true"></i></span>
+                      <label class="invisible text-muted input-group-addon" id="search_summary"><span id="search_number">0</span> Found </label>
                     </div>
                 </th>
                 <th rowspan="2">
@@ -125,13 +99,15 @@
             </tr>
         </template>
         <template id="purchase_console.line" name="purchase requisition console">
-            <tr>
-                <td colspan="5" class="text-left" t-attf-title="Line ID {{line.id}}"><span t-raw="line.product_id.display_name"/></td>
+            <tr t-attf-id="line_item_{{line.id}}" class="rqn_line_display_name">
+                <td colspan="5" class="text-left" t-attf-title="Line ID {{line.id}}">
+                    <span t-raw="line.product_id.display_name"/>
+                </td>
                 <td rowspan="2">
                     <t t-call="purchase_console.options"/>
                 </td>
             </tr>
-            <tr>
+            <tr t-attf-id="line_item_{{line.id}}" class="rqn_line_values">
                 <td><span t-raw="line.product_qty"/></td>
                 <td><span t-raw="line.forecast_qty"/></td>
                 <td><span t-raw="line.stock"/></td>

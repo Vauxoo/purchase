@@ -14,7 +14,9 @@ openerp.purchase_console = function(instance) {
             this.model_requisition = new instance.web.Model("purchase.requisition");
             this.actions = new instance.web.Model("ir.actions.actions");
             this.context = context.context;
-            if (context.context.active_id) this.requisition_id = context.context.active_id;
+            if (context.context.active_id) {
+                this.requisition_id = context.context.active_id;
+            }
             this.create_form_fields = {
                 supplier_ids: {
                     id: "supplier_ids",
@@ -70,7 +72,7 @@ openerp.purchase_console = function(instance) {
                 }));
             }).always(function(){
                 self.render();
-            })
+            });
         },
         /* create form widgets, append them to the dom and bind their events handlers */
         createFormWidgets: function() {
@@ -78,10 +80,11 @@ openerp.purchase_console = function(instance) {
             var create_form_fields = self.getParent().create_form_fields;
             var create_form_fields_arr = [];
             for (var key in create_form_fields)
-                if (create_form_fields.hasOwnProperty(key))
+                if (create_form_fields.hasOwnProperty(key)){
                     create_form_fields_arr.push(create_form_fields[key]);
+                }
             create_form_fields_arr.sort(function (a, b) {
-                return b.index - a.index
+                return b.index - a.index;
             });
 
             // field_manager
@@ -131,7 +134,7 @@ openerp.purchase_console = function(instance) {
             for (var i=0; i<create_form_fields_arr.length; i++) {
                 field_manager.fields_view.fields[create_form_fields_arr[i].id] = _.extend(new Default_field(), create_form_fields_arr[i].field_properties);
             }
-            field_manager.fields_view.fields["change_partner"] = _.extend(new Default_field(), {
+            field_manager.fields_view.fields.change_partner = _.extend(new Default_field(), {
                 relation: "res.partner",
                 string: _t("Partner"),
                 type: "many2one",
@@ -152,7 +155,7 @@ openerp.purchase_console = function(instance) {
 
             // generate the create "form"
             self.create_form = [];
-            for (var i=0; i<create_form_fields_arr.length; i++) {
+            for (i=0; i<create_form_fields_arr.length; i++) {
                 var field_data = create_form_fields_arr[i];
 
                 // create widgets
@@ -206,5 +209,4 @@ openerp.purchase_console = function(instance) {
             self.createFormWidgets();
         },
     });
-
 };

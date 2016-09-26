@@ -1,7 +1,6 @@
 openerp.purchase_console = function(instance) {
     var _t = instance.web._t,
-        _lt = instance.web._lt;
-    var QWeb = instance.web.qweb;
+        QWeb = instance.web.qweb;
 
     instance.web.purchase_console = instance.web.purchase_console || {};
     instance.web.client_actions.add(
@@ -79,10 +78,11 @@ openerp.purchase_console = function(instance) {
             var self = this;
             var create_form_fields = self.getParent().create_form_fields;
             var create_form_fields_arr = [];
-            for (var key in create_form_fields)
+            for (var key in create_form_fields){
                 if (create_form_fields.hasOwnProperty(key)){
                     create_form_fields_arr.push(create_form_fields[key]);
                 }
+            }
             create_form_fields_arr.sort(function (a, b) {
                 return b.index - a.index;
             });
@@ -144,8 +144,9 @@ openerp.purchase_console = function(instance) {
             // Returns a function that serves as a xhr response handler
             var hideGroupResponseClosureFactory = function(field_widget, $container, obj_key){
                 return function(has_group){
-                    if (has_group) $container.show();
-                    else {
+                    if (has_group){
+                        $container.show();
+                    }else {
                         field_widget.destroy();
                         $container.remove();
                         delete self[obj_key];
@@ -160,7 +161,9 @@ openerp.purchase_console = function(instance) {
 
                 // create widgets
                 var node = new Default_node(field_data.id);
-                if (! field_data.required) node.attrs.modifiers = "";
+                if (! field_data.required){
+                    node.attrs.modifiers = "";
+                }
                 var field = new field_data.constructor(field_manager, node);
                 self[field_data.id+"_field"] = field;
                 self.create_form.push(field);

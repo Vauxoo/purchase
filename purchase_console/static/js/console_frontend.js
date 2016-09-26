@@ -4,27 +4,19 @@
         var self = $(this);
         var rqn_data = self.parents('.js_action_management').data();
         $('.front-console').addClass('loading');
-        console.log(rqn_data.id);
 
         openerp.jsonRpc(
             '/purchase/console/' + rqn_data.id + '/' + self.data('name'), 'call',
             {'options': []})
             .then(function (data) {
                 if (data.result === true){
-                    console.log('ok... ');
-                    console.log(data);
                     $('.front-console').removeClass('loading');
                     location.reload();
                 }
                 else if (data.result === false){
-                    console.log('Not ok... ');
-                    console.log(data);
                     $('.front-console').removeClass('loading');
                 }
-            }).fail(function (err, data) {
-                console.log('Not ok... ');
-                console.log(err);
-                console.log(data);
+            }).fail(function () {
                 $('.front-console').removeClass('loading');
             });
     });
@@ -35,7 +27,7 @@
         };
     });
 
-    $(document).on('keyup', '#search_box', function(e){
+    $(document).on('keyup', '#search_box', function(){
         var change_text = $(this).val();
         $("tr[id*='line_item_']").show();
         $("#search_summary").removeClass('invisible');
@@ -52,7 +44,6 @@
 
 
     $(document).on('dblclick', '.edit-span', function (){
-        console.log('##');
         var span = $(this);
         var input = span.next();
         input.show().removeAttr('disabled');
@@ -62,7 +53,6 @@
 
     $(document).on('keypress', '.rqn_line_display_name .rqn_line_polines .edit-input', function (event) {
         if (event.which == 13) {
-            console.log('###');
             var input = $(this);
             var name = input.attr('name');
             var id = input.parents('.order_line').attr('id');
@@ -80,8 +70,9 @@
                     span.text(value);
                 }
                 else if (data.result === false){
+                    span.text('XX');
                 }
-            }).fail(function (err, data) {
+            }).fail(function () {
             });
             span.show().removeAttr('disabled');
             input.hide().attr({'disabled': 'disabled'});

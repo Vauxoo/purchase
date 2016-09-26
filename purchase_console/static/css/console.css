@@ -66,5 +66,5 @@
 }
 .edit-input.form-control.input-sm{
     margin: auto;
-    width: inherit;
+    width: 100%;
 }

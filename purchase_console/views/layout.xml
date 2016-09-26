@@ -3,14 +3,18 @@
 -->
 <openerp>
     <data>
+        <template id="purchase_console.assets_frontend" name="Purchase Console assets">
+            <t t-call="web.assets_common"/>
+            <t t-call="web.assets_backend"/>
+            <!--TODO: this should have its own assets_
+            -->
+            <script type="text/javascript" src="/purchase_console/static/js/console_frontend.js"></script>
+            <link href="/purchase_console/static/less/purchase_console.less" rel="stylesheet" type="text/less"/>
+        </template>
         <template id="purchase_console.layout" name="purchase requisition layout">
             <t t-call="web.layout">
                 <t t-set="head">
-                    <t t-call-assets="web.assets_common"/>
-                    <t t-call-assets="web.assets_backend"/>
-                    <!--TODO: this should have its own assets_
-                    -->
-                    <script type="text/javascript" src="/purchase_console/static/js/console_frontend.js"></script>
+                    <t t-call-assets="purchase_console.assets_frontend"/>
                 </t>
             </t>
         </template>

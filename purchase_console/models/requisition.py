@@ -221,7 +221,7 @@ class PurchaseOrderLine(models.Model):
                 line.product_uom.id, parent.partner_id.id, parent.date_order,
                 parent.fiscal_position.id, line.date_planned, line.name,
                 False, parent.state, self.env.context).get('value')
-            print line.write(values)
+            line.write(values)
 
     def get_last_inv_line(self):
         """Last price is the last price paid for this product invoice based or

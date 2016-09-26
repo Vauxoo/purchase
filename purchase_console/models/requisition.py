@@ -92,12 +92,13 @@ class PurchaseRequisition(models.Model):
     def check_rfq(self):
         """Check if can generate Purchases quotes
         if multiple_rfq_per_supplier is False and exists any purchase order
-        with partner of any in supplier_ids can generate more rfq
+        with partner of any in supplier_ids can not generate more rfq
         """
         self.ensure_one()
         for supplier in self.supplier_ids:
             if not self.multiple_rfq_per_supplier and supplier.id in \
-                    self.purchase_ids.filtered(lambda x: x.state != 'cancel'):
+                    self.purchase_ids.mapped(
+                        lambda x: x.state != 'cancel' and x.partner_id.id):
                 return False
         return True
 
@@ -255,18 +256,20 @@ class PurchaseOrderLine(models.Model):
         return sorted(elements, key=lambda il: il[1])
 
     @api.multi
-    @api.depends()
+    @api.depends(
+        'product_id', 'last_price',
+        'order_id.requisition_id.advantage_discount')
     def _compute_prices(self):
         """Get the values computed for prices
         :return:
         """
-        self.ensure_one()
-        ils = self.get_last_inv_line()
-        self.last_invoice_id = ils and ils[0][0] or False
-        self.last_price = ils and ils[0][1] or 0.00
-        self.accounting_cost = self.product_id.standard_price
-        self.price_bid = self.last_price * \
-            (1 - self.order_id.requisition_id.advantage_discount)
+        for line in self:
+            ils = line.get_last_inv_line()
+            line.last_invoice_id = ils and ils[0][0] or False
+            line.last_price = ils and ils[0][1] or 0.00
+            line.accounting_cost = line.product_id.standard_price
+            line.price_bid = line.last_price * \
+                (1 - line.order_id.requisition_id.advantage_discount)
 
     price_bid = fields.Float(digits_compute=precision,
                              help="Technical field: for not loosing the price"

@@ -3,8 +3,8 @@
 import time
 from datetime import datetime
 
-from openerp.report import report_sxw
 from openerp.osv import osv
+from openerp.report import report_sxw
 
 
 class RequestForQuotation(report_sxw.rml_parse):

@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Vauxoo/purchase.svg?branch=8.0)](https://travis-ci.org/Vauxoo/purchase)
+[![Coverage Status](https://coveralls.io/repos/github/Vauxoo/purchase/badge.svg?branch=8.0)](https://coveralls.io/github/Vauxoo/purchase?branch=8.0)
 
 # purchase
 Advanced purchase modules managed in Vauxoo

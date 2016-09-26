@@ -20,12 +20,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 import base64
-from openerp import api, fields, models, _
-try:
-    from openerp.addons.controller_report_xls.controllers.main \
-            import get_xls
-except ImportError:
-    print 'Dear Future Me.... Please do not do this'
+
+from openerp import _, api, fields, models
+from openerp.addons.controller_report_xls.controllers.main import get_xls
 
 
 class MailComposer(models.TransientModel):
@@ -33,23 +30,19 @@ class MailComposer(models.TransientModel):
     _name = 'mail.compose.message'
     _inherit = 'mail.compose.message'
 
-    def get_mail_values(self, cr, uid, wizard, res_ids, context=None):
-        extra_attachments = context.get('extra_attachments')
-        if extra_attachments:
-            assert isinstance(extra_attachments, list), '''Extra Attachments
-                                                        to be copied
-                                                        must be a list of ids
-                                                        '''
-            att_ids = context.get('extra_attachments')
+    @api.model
+    def get_mail_values(self, wizard, res_ids):
+        att_ids = self.env.context.get('extra_attachments')
+        if att_ids:
             wizard.write({'attachment_ids': [(4, i) for i in att_ids]})
-        return super(MailComposer, self).get_mail_values(cr, uid, wizard, res_ids, context=context)
+        return super(MailComposer, self).get_mail_values(wizard, res_ids)
 
 
 class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     @api.multi
-    def _get_received_quote(self):
+    def _compute_received_quote(self):
         att = self.env['ir.attachment']
         for purchase in self:
             # TODO: Check if it was loaded marking it.
@@ -65,11 +58,11 @@ class PurchaseOrder(models.Model):
 
     received_quote = fields.Boolean(help="We have at least one xls file as"
                                          "attachment already loaded.",
-                                    compute="_get_received_quote")
+                                    compute="_compute_received_quote")
     supplier_quote = fields.Many2one("ir.attachment",
                                      help="Attachment considered the one from"
                                           " supplier",
-                                     compute="_get_received_quote")
+                                     compute="_compute_received_quote")
 
     @api.model
     def _get_xls(self):
@@ -93,36 +86,27 @@ class PurchaseOrder(models.Model):
 
     @api.multi
     def action_rfq_send(self):
-        '''
-        This function opens a window to compose an email, with the edi purchase
-        template message loaded by default
+        """This function opens a window to compose an email,
+        with the edi purchase template message loaded by default
         backported from v9.0.
-        '''
+        """
         self.ensure_one()
-        ir_model_data = self.env['ir.model.data']
-        try:
-            if self.env.context.get('send_rfq', False):
-                template_id = ir_model_data.get_object_reference(
-                        'purchase', 'email_template_edi_purchase')[1]
-            else:
-                template_id = ir_model_data.get_object_reference(
-                        'purchase', 'email_template_edi_purchase_done')[1]
-        except ValueError:
-            template_id = False
-        try:
-            compose_form_id = ir_model_data.get_object_reference(
-                        'mail', 'email_compose_message_wizard_form')[1]
-        except ValueError:
-            compose_form_id = False
-        ctx = dict(self.env.context or {})
-        ctx.update({
-            'default_model': 'purchase.order',
-            'default_res_id': self.ids[0],
-            'default_use_template': bool(template_id),
-            'default_template_id': template_id,
-            'default_composition_mode': 'comment',
-            'extra_attachments': [self.supplier_quote.id],
-        })
+        template_id = self.env.ref('purchase.email_template_edi_purchase_done',
+                                   raise_if_not_found=False)
+        if self.env.context.get('send_rfq'):
+            template_id = self.env.ref('purchase.email_template_edi_purchase',
+                                       raise_if_not_found=False)
+        compose_form_id = self.env.ref(
+            'mail.email_compose_message_wizard_form', raise_if_not_found=False)
+        ctx = dict(
+            self.env.context,
+            default_model='purchase.order',
+            default_res_id=self.ids[0],
+            default_use_template=bool(template_id),
+            default_template_id=template_id,
+            default_composition_mode='comment',
+            extra_attachments=[self.supplier_quote.id],
+        )
         return {
             'name': _('Compose Email'),
             'type': 'ir.actions.act_window',
@@ -152,13 +136,9 @@ class PurchaseOrder(models.Model):
     def receive_rfq_xls(self):
         self.ensure_one()
         action = self.env.ref(
-                'purchase_rfq_xls.action_purchase_quotation').read([])[0]
-        action.update({'target': 'new'})
-        context = dict(self._context)
-        context.update({
-            'purchase': self.id
-            })
-
+            'purchase_rfq_xls.action_purchase_quotation').read([])[0]
+        context = dict(self._context, purchase=self.id)
+        action.update({'target': 'new', 'context': context})
         return action
 
 

@@ -14,7 +14,9 @@ from openerp import http
 
 class Console(http.Controller):
 
-    def get_help(self, record, fields=[]):
+    def get_help(self, record, fields=None):
+        if fields is None:
+            fields = []
         fields_info = record.fields_get(fields, attributes=['help', 'string'])
         return fields_info
 

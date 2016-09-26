@@ -8,7 +8,7 @@
 #    coded by: Nhomar Hernandez <nhomar@vauxoo.com>
 #    planned by: Nhomar Hernandez <nhomar@vauxoo.com>
 ############################################################################
-from openerp import models, fields, api
+from openerp import api, fields, models
 
 
 class FillProducts(models.TransientModel):

@@ -8,9 +8,10 @@
 #    coded by: Nhomar Hernandez <nhomar@vauxoo.com>
 #    planned by: Nhomar Hernandez <nhomar@vauxoo.com>
 ############################################################################
-from openerp import models, fields, api, _
 from operator import attrgetter
+
 import openerp.addons.decimal_precision as dp
+from openerp import _, api, fields, models
 
 
 class PurchaseRequisition(models.Model):
@@ -41,7 +42,7 @@ class PurchaseRequisition(models.Model):
         return partners.sorted(key=attrgetter('name'))
 
     @api.depends('exclusive', 'purchase_ids', 'line_ids')
-    def _get_partners_related(self):
+    def _compute_suppliers(self):
         """Given a set of purchase products in a bid, compute the partners that
         should be called on such bid.
         """
@@ -49,9 +50,9 @@ class PurchaseRequisition(models.Model):
             order.supplier_ids = self._get_suppliers()
 
     @api.model
-    def _create_po_given_partner(self):
-        """When add a partner we assume you will ask for prices, then a PO is created.
-        :return:
+    def _inverse_suppliers(self):
+        """When add a partner we assume you will ask for prices,
+        then a PO is created. :return:
         """
         supplier_on_orders = self.purchase_ids.mapped('partner_id')
         new_suppliers = supplier_on_orders - self.supplier_ids
@@ -63,10 +64,10 @@ class PurchaseRequisition(models.Model):
     user_id = fields.Many2one(help="User in charge of give follow up to this"
                                    "requisition process.")
     supplier_ids = fields.Many2many('res.partner',
-                                    compute="_get_partners_related",
+                                    compute="_compute_suppliers",
                                     copy=False,
                                     domain=[('supplier', '=', True)],
-                                    inverse='_create_po_given_partner')
+                                    inverse='_inverse_suppliers')
     line_ids = fields.One2many('purchase.requisition.line',
                                'requisition_id',
                                'Products to Purchase',
@@ -145,9 +146,10 @@ class PurchaseRequisition(models.Model):
         return action
 
 
-class procurement_order(models.Model):
+class ProcurementOrder(models.Model):
     _inherit = 'procurement.order'
 
+    # TODO: Use new api here?
     def _run(self, cr, uid, procurement, context=None):
         requisition_obj = self.pool.get('purchase.requisition')
         warehouse_obj = self.pool.get('stock.warehouse')
@@ -177,12 +179,11 @@ class procurement_order(models.Model):
             return self.write(cr, uid, [procurement.id],
                               {'requisition_id': requisition_id},
                               context=context)
-        return super(procurement_order, self)._run(cr, uid,
-                                                   procurement,
-                                                   context=context)
+        return super(ProcurementOrder, self)._run(
+            cr, uid, procurement, context=context)
 
 
-class purchase_order_line(models.Model):
+class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     precision = dp.get_precision('Product Unit of Measure')
 
@@ -198,8 +199,8 @@ class purchase_order_line(models.Model):
                         FROM account_invoice_line as l
                     INNER JOIN account_invoice as i ON i.id=l.invoice_id
                     INNER JOIN res_partner as r ON r.id=i.partner_id
-                        WHERE (l.product_id = {product_id}
-                            AND i.partner_id = {partner_id})
+                        WHERE (l.product_id = %(product_id)s
+                            AND i.partner_id = %(partner_id)s)
                             AND i.state in ('open', 'paid')
                     LIMIT 1)
                     UNION
@@ -207,22 +208,24 @@ class purchase_order_line(models.Model):
                         FROM account_invoice_line as l
                     INNER JOIN account_invoice as i ON i.id=l.invoice_id
                     INNER JOIN res_partner as r ON r.id=i.partner_id
-                        WHERE (l.product_id = {product_id}
-                            AND i.partner_id != {partner_id})
+                        WHERE (l.product_id = %(product_id)s
+                            AND i.partner_id != %(partner_id)s)
                             AND i.state in ('open', 'paid')
                     ORDER BY date_invoice DESC
                     LIMIT 1)"""
-        self._cr.execute(query.format(product_id=self.product_id.id,
-                                      partner_id=self.order_id.partner_id.id))
+        self._cr.execute(query, dict(
+            product_id=self.product_id.id,
+            partner_id=self.order_id.partner_id.id))
         elements = [row for row in self._cr.fetchall()]
         return sorted(elements, key=lambda il: il[1])
 
-    @api.one
+    @api.multi
     @api.depends()
-    def _get_prices(self):
+    def _compute_prices(self):
         """Get the values computed for prices
         :return:
         """
+        self.ensure_one()
         ils = self.get_last_inv_line()
         self.last_invoice_id = ils and ils[0][0] or False
         self.last_price = ils and ils[0][1] or 0.00
@@ -235,7 +238,7 @@ class purchase_order_line(models.Model):
                              "used for the bid, which can be generally a"
                              "little percentage less than the actual computed"
                              "one.",
-                             compute="_get_prices")
+                             compute="_compute_prices")
     last_price = fields.Float(digits_compute=precision,
                               help="Technical field: It will represent the "
                               "more little one between the last purchase  "
@@ -243,24 +246,20 @@ class purchase_order_line(models.Model):
                               " done. If never bought to this  supplier this "
                               "will be the same than the last one, if never"
                               " bought at all this will be 0",
-                              compute="_get_prices")
+                              compute="_compute_prices")
     accounting_cost = fields.Float('Acc', digits_compute=precision,
                                    help="Technical field: it will represent "
                                    "the more the actual standard cost in the "
                                    "product (the accounting one) used as"
                                    "reference ",
-                                   compute="_get_prices")
+                                   compute="_compute_prices")
     last_invoice_id = fields.Many2one('account.invoice.line',
                                       help="Technical field: it will represent"
                                       " the last account invoice line done "
                                       "to this supplier  or simply the last "
                                       "invoice the one with the littlest "
                                       "price.",
-                                      compute="_get_prices")
-
-    @api.one
-    def select_this(self):
-        pass
+                                      compute="_compute_prices")
 
     # def action_draft(self, cr, uid, ids, context=None):
     #     self.write(cr, uid, ids, {'state': 'draft'}, context=context)
@@ -293,12 +292,12 @@ class PurchaseRequisitionLine(models.Model):
         return cost
 
     @api.multi
-    def _get_line_fields(self):
+    def _compute_line_fields(self):
         for req in self:
             req.consolidated_price = self._get_consolidated_price(req)
 
     @api.multi
-    def _get_po_line(self):
+    def _compute_po_line(self):
         excluded = self.env['purchase.requisition']._excluded_states_po
         for line in self:
             purl = line.env['purchase.order.line']
@@ -310,9 +309,9 @@ class PurchaseRequisitionLine(models.Model):
 
     @api.model
     def get_po_line_render(self):
-        '''For render reasons we need have a False record per line if the
+        """For render reasons we need have a False record per line if the
         partner did not quote this element in order to render properly always a
-        correct number of columns per line.'''
+        correct number of columns per line."""
         self.ensure_one()
         lines = self.po_line_ids
         res = []
@@ -325,7 +324,7 @@ class PurchaseRequisitionLine(models.Model):
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders "
                                   "lines related to a line.",
-                                  compute="_get_po_line")
+                                  compute="_compute_po_line")
     consolidated_price = fields.Float(string="Consolidated",
                                       help="Technical field: The cost price"
                                       "including the landing costs for "
@@ -334,7 +333,7 @@ class PurchaseRequisitionLine(models.Model):
                                       "logistic for example: Landing costs, "
                                       "Time to arrival, accounting impacts, "
                                       "other expenses.",
-                                      compute="_get_line_fields")
+                                      compute="_compute_line_fields")
     # TODO: Put this in the stock_forecast module.
     forecast_qty = fields.Float('Projected', readonly=True,
                                 help="Technical field: The quantity "

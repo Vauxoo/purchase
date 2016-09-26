@@ -19,11 +19,13 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError, Warning as UserError
 import base64
-
 import logging
+
+from openerp import _, api, fields, models
+from openerp.exceptions import Warning as UserError
+from openerp.exceptions import ValidationError
+
 _logger = logging.getLogger(__name__)
 
 try:
@@ -41,7 +43,7 @@ class PurchaseQuotationWizard(models.TransientModel):
     _col_start = "ID"
 
     @api.depends()
-    def _get_purchase(self):
+    def _compute_purchase(self):
         context = dict(self._context)
         if self.purchase:
             # If you wired it throught context do not recompute.
@@ -66,7 +68,7 @@ class PurchaseQuotationWizard(models.TransientModel):
                               ('success2', 'success2')], default='form')
     line_ids = fields.One2many(
         'purchase.quotation.wizard.line', 'wizard_id')
-    purchase = fields.Many2one('purchase.order', compute='_get_purchase')
+    purchase = fields.Many2one('purchase.order', compute='_compute_purchase')
 
     @api.model
     def default_get(self, defaults):

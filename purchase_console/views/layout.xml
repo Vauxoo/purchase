@@ -60,27 +60,27 @@
                     <div t-attf-class="order_line col-md-{{po_lines_width}}" t-att-id="element.id">
                         <div>
                             <span t-att-title="'%s: %s' % (helps['product_qty']['string'], helps['product_qty']['help'])"
-                                t-raw="element.product_qty" class="edit-span"/>
+                                t-esc="element.product_qty" class="edit-span"/>
                             <input class="edit-input form-control input-sm" type="text" name="product_qty" t-att-value="element.product_qty" style="display: none;" disabled=""/>
                         </div>
                         <div>
                             <span t-att-title="'%s: %s' % (helps['last_price']['string'], helps['last_price']['help'])"
-                                t-raw="element.last_price" class=""/>
+                                t-esc="element.last_price" class=""/>
                             <input class="form-control input-sm" type="text" name="last_price" t-att-value="element.last_price" style="display: none;" disabled=""/>
                         </div>
                         <div>
                             <span t-att-title="'%s: %s' % (helps['price_bid']['string'], helps['price_bid']['help'])"
-                                t-raw="element.price_bid" class="edit-span"/>
+                                t-esc="element.price_bid" class="edit-span"/>
                             <input class="edit-input form-control input-sm" type="text" name="price_bid" t-att-value="element.price_bid" style="display: none;" disabled=""/>
                         </div>
                         <div>
                             <span t-att-title="'%s: %s' % (helps['price_unit']['string'], helps['price_unit']['help'])"
-                                t-raw="element.price_unit" class="edit-span"/>
+                                t-esc="element.price_unit" class="edit-span"/>
                             <input class="edit-input form-control input-sm" type="text" name="price_unit" t-att-value="element.price_unit" style="display: none;" disabled=""/>
                         </div>
                         <div>
                             <span t-att-title="'%s: %s' % (helps['accounting_cost']['string'], helps['accounting_cost']['help'])"
-                                t-raw="element.accounting_cost" class="edit-span"/>
+                                t-esc="element.accounting_cost" class="edit-span"/>
                             <input class="form-control input-sm" type="text" name="accounting_cost" t-att-value="element.accounting_cost" style="display: none;" disabled=""/>
                         </div>
                     </div>

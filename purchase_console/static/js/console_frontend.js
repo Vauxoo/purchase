@@ -76,7 +76,8 @@
                 'value': input.val()
             }).then(function (data) {
                 if (data.result === true){
-                    span.text(input.val());
+                    var value = parseFloat(input.val()).toFixed(1);
+                    span.text(value);
                 }
                 else if (data.result === false){
                 }
@@ -86,4 +87,12 @@
             input.hide().attr({'disabled': 'disabled'});
         }
     });
+
+    $(document).on('keypress', '.edit-input', function(event) {
+        if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+        }
+    });
+
+
 })();

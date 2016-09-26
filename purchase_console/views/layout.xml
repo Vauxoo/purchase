@@ -8,6 +8,7 @@
             <t t-call="web.assets_backend"/>
             <!--TODO: this should have its own assets_
             -->
+            <script type="text/javascript" src="/website/static/src/js/website.js"></script>
             <script type="text/javascript" src="/purchase_console/static/js/console_frontend.js"></script>
             <link href="/purchase_console/static/less/purchase_console.less" rel="stylesheet" type="text/less"/>
         </template>
@@ -61,7 +62,7 @@
                 <t t-foreach="line.get_po_line_render()" t-as="element">
                     <t t-set="helps"
                     t-value="get_help(element, ['accounting_cost', 'product_qty', 'price_unit', 'price_bid', 'last_price'])"/>
-                    <div t-attf-class="order_line col-md-{{po_lines_width}}" t-att-id="element.id">
+                    <div class="order_line" t-att-id="element.id">
                         <div>
                             <span t-att-title="'%s: %s' % (helps['product_qty']['string'], helps['product_qty']['help'])"
                                 t-esc="element.product_qty" class="edit-span"/>
@@ -101,9 +102,9 @@
                     </div>
                 </th>
                 <th rowspan="2">
-                    <div class="row">
+                    <div class="supplier-header row">
                         <t t-foreach="requisition.supplier_ids" t-as="supplier">
-                            <div t-attf-class="col-md-{{po_lines_width}}">
+                            <div t-attf-class="line-header">
                                 <img t-attf-src="/web/binary/image?model=res.partner&#38;id={{supplier.id}}&#38;field=image_small"
                                     class="img img-responsive" t-att-title="supplier.display_name"/>
                             </div>

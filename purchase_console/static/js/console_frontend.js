@@ -94,5 +94,13 @@
         }
     });
 
+    openerp.website.if_dom_contains('.supplier-header', function(elements){
+        var line_header = $(elements);
+        var new_width = line_header.width() / line_header.find('.line-header').length;
+        // The new width is increased because we're taking into account the padding-left and right
+        $('.line-header, .order_line').width(new_width - 30);
+
+    });
+
 
 })();

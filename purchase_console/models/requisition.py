@@ -96,9 +96,8 @@ class PurchaseRequisition(models.Model):
         """
         self.ensure_one()
         for supplier in self.supplier_ids:
-            if not self.multiple_rfq_per_supplier and supplier.id in filter(
-                lambda x: x, [rfq.state != 'cancel' and rfq.partner_id.id or
-                              None for rfq in self.purchase_ids]):
+            if not self.multiple_rfq_per_supplier and supplier.id in \
+                    self.purchase_ids.filtered(lambda x: x.state != 'cancel'):
                 return False
         return True
 

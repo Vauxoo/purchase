@@ -53,7 +53,7 @@ class Console(http.Controller):
             try:
                 res['message'] = getattr(requisition, action)()
                 res['result'] = True
-            except Exception as e:
+            except ValueError as e:
                 res['result'] = False
                 res['message'] = e.message
         return res
@@ -68,7 +68,7 @@ class Console(http.Controller):
         try:
             pol.update_line(cr, uid, line.id, data, context=context)
             res['result'] = True
-        except Exception as e:
+        except ValueError as e:
             res['result'] = False
             res['message'] = e.message
         return res

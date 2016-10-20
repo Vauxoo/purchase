@@ -103,7 +103,7 @@ class PurchaseOrder(models.Model):
             default_model='purchase.order',
             default_res_id=self.ids[0],
             default_use_template=bool(template_id),
-            default_template_id=template_id,
+            default_template_id=template_id.id,
             default_composition_mode='comment',
             extra_attachments=[self.supplier_quote.id],
         )
@@ -113,8 +113,8 @@ class PurchaseOrder(models.Model):
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'mail.compose.message',
-            'views': [(compose_form_id, 'form')],
-            'view_id': compose_form_id,
+            'views': [(compose_form_id.id, 'form')],
+            'view_id': compose_form_id.id,
             'target': 'new',
             'context': ctx,
         }

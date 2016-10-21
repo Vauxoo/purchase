@@ -26,3 +26,32 @@ class PurchaseOrder(models.Model):
         action = self.env['report'].with_context(context).get_action(
             self, 'purchase.report_purchasequotation')
         return action
+
+    @api.multi
+    def force_rfq_send(self):
+        for order in self:
+            # email_act = order.with_context({'send_rfq': True}).wkf_send_rfq()
+            email_act = order.with_context(
+                {'send_rfq': True}).action_rfq_send()
+            if email_act and email_act.get('context'):
+                composer_obj = self.env['mail.compose.message']
+                composer_values = {}
+                email_ctx = email_act['context']
+                template_values = [
+                    email_ctx.get('default_template_id'),
+                    email_ctx.get('default_composition_mode'),
+                    email_ctx.get('default_model'),
+                    email_ctx.get('default_res_id'),
+                ]
+                composer_values.update(composer_obj.onchange_template_id(
+                    *template_values).get('value', {}))
+                if not composer_values.get('email_from'):
+                    composer_values['email_from'] = order.company_id.email
+                for key in ['attachment_ids', 'partner_ids']:
+                    if composer_values.get(key):
+                        composer_values[key] = [(6, 0, composer_values[key])]
+                composer = composer_obj.with_context(email_ctx).create(
+                    composer_values)
+                composer.with_context(email_ctx).send_mail()
+                order.signal_workflow('send_rfq')
+        return True

@@ -9,14 +9,14 @@
                 <!-- Dear future me: container here because the chatter widget without this
                 will not render properly -->
                 <header>
-                    <button name="open_fill" type="object" string="Populate" class="oe_highlight" help="Populate this RFQ with all products which belong to an specific partner"/>
-                    <button name="procure_products_from_suppliers" string="Procure" type="object" class="oe_highlight"
+                    <button name="open_fill" type="object" states="draft" string="Populate" class="oe_highlight" help="Populate this RFQ with all products which belong to an specific partner"/>
+                    <button name="procure_products_from_suppliers" states="draft" string="Procure" type="object" class="oe_highlight"
                             help="Procure product up today, if partners is empty then we will procure all products which need inventory If partner selected then only products which this partner can sell will be procured."/>
                     <button name="sent_suppliers" states="draft" string="Confirm Call" class="oe_highlight"
                         help="Mark this document as ready to ro purchase."/>
                     <button name="open_bid" states="in_progress" string="Close Call for Bids" class="oe_highlight"/>
                     <button name="tender_reset" states="cancel" string="Reset to Draft" type="object" />
-                    <button name="open_console_web" string="Edit Web" type="object"/>
+                    <button name="open_console_web" string="Edit Web" attrs="{'invisible': [('line_ids', '=', [])]}" type="object"/>
                     <button name="open_product_line" states="open" string="Choose product lines" type="object" class="oe_highlight" groups="purchase.group_advance_bidding"/>
                     <button name="generate_po" states="open" string="Done" type="object" class="oe_highlight"/>
                     <button name="cancel_requisition" states="draft,in_progress" string="Cancel Call"/>

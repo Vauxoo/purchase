@@ -10,7 +10,7 @@
     </t>
     <t t-name="ListView.row.one2many_columns">
         <t t-foreach="widget.elements.length" t-as="index">
-            <div t-att-style="'width: ' + (Math.round(100/widget.elements.length - 0.5))  + '%; ' + 'float: left; text-align: center; z-index: 1000;'">
+            <div t-att-style="'width: ' + (Math.round(100/widget.partners.length - 0.5))  + '%; ' + 'float: left; text-align: center; z-index: 1000;'">
                 <div style="border-right: solid 1px gray;">
                     <div class="row" t-att-title="'Quantity Quoted by:' + widget.elements[index].partner_id[1]">
                         <t t-esc="widget.elements[index].product_qty"></t></div>

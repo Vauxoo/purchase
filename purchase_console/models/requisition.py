@@ -83,11 +83,6 @@ class PurchaseRequisition(models.Model):
     stock_to = fields.Char(readonly=True, help="Technical field: How much time"
                                                " do you have of stock.")
 
-    @api.multi
-    def confirm_call(self):
-        self.ensure_one()
-        return self.write({'state': 'in_progress'})
-
     @api.model
     def check_rfq(self):
         """Check if can generate Purchases quotes
@@ -106,10 +101,43 @@ class PurchaseRequisition(models.Model):
     def procure_products_from_suppliers(self):
         """Given a set of products compute procurements for products where
         those partners are suppliers.
+        And change requisition state to in_progress state.
         """
         self.ensure_one()
         for supplier in self.supplier_ids:
             self.make_purchase_order(supplier.id)
+        self.signal_workflow('sent_suppliers')
+        return True
+
+    @api.multi
+    def confirm_call(self):
+        self.ensure_one()
+        self.tender_in_progress()
+        return True
+
+    @api.multi
+    def sent_suppliers(self):
+        """this method will send all rfq to all suppliers
+        """
+        self.ensure_one()
+        for order in self.purchase_ids:
+            order.force_rfq_send()
+        return True
+
+    @api.multi
+    def open_bid(self):
+        """this method will Finish Call of bids
+        """
+        self.ensure_one()
+        self.tender_open()
+        return True
+
+    @api.multi
+    def cancel_requisition(self):
+        """this method will Cancel the requisition.
+        """
+        self.ensure_one()
+        self.tender_cancel()
         return True
 
     @api.multi
@@ -210,6 +238,20 @@ class PurchaseOrderLine(models.Model):
 
     @api.multi
     def update_line(self, data):
+        """This method will update the values line showed in front end:
+           * product_qty
+           * last_price
+           * price_bid
+           * price_unit
+           * accounting_cost
+           * state
+
+        @data: Dictionary that contains the values to update
+            {'id': id, 'name': name, 'value': 'value'}
+            id: line id
+            name: field name to update
+            value: new value
+        """
         self.ensure_one()
         pol = self.pool.get('purchase.order.line')
         line, parent = self, self.order_id
@@ -222,6 +264,16 @@ class PurchaseOrderLine(models.Model):
                 parent.fiscal_position.id, line.date_planned, line.name,
                 False, parent.state, self.env.context).get('value')
             line.write(values)
+
+        if data.get('name') == 'state':
+            if not data.get('value'):
+                pol.action_draft(
+                    self.env.cr, self.env.uid, [line.id],
+                    context=self.env.context)
+            if data.get('value', False):
+                pol.action_confirm(
+                    self.env.cr, self.env.uid, [line.id],
+                    context=self.env.context)
 
     def get_last_inv_line(self):
         """Last price is the last price paid for this product invoice based or
@@ -357,11 +409,12 @@ class PurchaseRequisitionLine(models.Model):
         self.ensure_one()
         lines = self.po_line_ids
         res = []
-        for supp in self.requisition_id.supplier_ids:
+        for supp in self.requisition_id.supplier_ids.sorted():
             line = lines.filtered(
                 lambda rec, k=supp: rec.order_id.partner_id == k)
-            res.append(line)
-        return res
+            res.append(line.id)
+        po_lines = self.po_line_ids.browse(res)
+        return po_lines
 
     po_line_ids = fields.One2many('purchase.order.line',
                                   help="Technical field: the purchase orders "

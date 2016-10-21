@@ -26,8 +26,11 @@ class Console(http.Controller):
         auth='user', type="http")
     def console(self, requisition):
         # Because is a basic algorithm to be used just for rendering.
-        max_po_line_ids = len(requisition.supplier_ids)
-        po_lines_width = int(12.00/max_po_line_ids)
+        max_po_line_ids = 0
+        po_lines_width = 0
+        if requisition.supplier_ids:
+            max_po_line_ids = len(requisition.supplier_ids)
+            po_lines_width = int(12.00/max_po_line_ids)
 
         return http.request.render('purchase_console.requisition', {
             'requisition': requisition,
@@ -72,3 +75,51 @@ class Console(http.Controller):
             res['result'] = False
             res['message'] = e.message
         return res
+
+    @http.route(
+        '/purchase_console/order_approve/',
+        auth='user', type="json")
+    def purchase_order_approve(self, order_id, **data):
+        cr, uid, context = request.cr, request.uid, request.context
+        purchase_obj = request.registry('purchase.order')
+        res = {'result': False}
+        try:
+            purchase_obj.signal_workflow(
+                cr, uid, [order_id], 'purchase_approve', context=context)
+            res['result'] = True
+        except ValueError as e:
+            res['result'] = False
+            res['message'] = e.message
+        return res
+
+    @http.route(
+        '/purchase_console/action-line/',
+        auth='user', type="json")
+    def purchase_order_line_confirm(self, line_id, **data):
+        cr, uid, context = request.cr, request.uid, request.context
+        pol = request.registry('purchase.order.line')
+        res = {'result': False}
+        try:
+            pol.update_line(cr, uid, line_id, data, context=context)
+            res['result'] = True
+        except ValueError as e:
+            res['result'] = False
+            res['message'] = e.message
+        return res
+
+    @http.route(
+        '/purchase_console/remove-line/',
+        auth='user', type="json")
+    def purchase_order_line_unlik(self, line_id, **data):
+        cr, uid, context = request.cr, request.uid, request.context
+        pol = request.registry('purchase.order.line')
+        return pol.unlink(cr, uid, [line_id], context=context)
+
+    @http.route(
+        ['/shop/purchase_order_modal/<model("purchase.order"):order>'],
+        type='json', auth="public", methods=['POST'], website=True)
+    def modal(self, order, **data):
+        return request.website._render(
+            "purchase_console.purchase_order_modal",
+            {'order': order,
+             })

@@ -62,6 +62,7 @@
         'views/purchase_requisition_view.xml',
         'views/layout.xml',
         'wizard/fill_products_wizard_view.xml',
+        'data/data.xml',
     ],
     "demo": [
     ],

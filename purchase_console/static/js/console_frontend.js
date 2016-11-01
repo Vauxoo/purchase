@@ -15,18 +15,19 @@
                 }
                 else if (data.result === false){
                     $('.front-console').removeClass('loading');
+                    display_msg_error(data.message);
                 }
             }).fail(function () {
                 $('.front-console').removeClass('loading');
             });
     });
 
+    // Searching product line  Feature
     jQuery.expr[":"].Contains = jQuery.expr.createPseudo(function(arg) {
         return function( elem ) {
             return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
         };
     });
-
     $(document).on('keyup', '#search_box', function(){
         var change_text = $(this).val();
         $("tr[id*='line_item_']").show();
@@ -43,6 +44,7 @@
     });
 
 
+    // Edition of the values of the cell options
     $(document).on('dblclick', '.edit-span', function (){
         // Hide all the other inputs if them
         $('.edit-input').hide().attr({'disabled': 'disabled'});
@@ -56,7 +58,6 @@
         input.focus();
         span.hide().attr({'disabled': 'disabled'});
     });
-
     $(document).on('keypress', '.rqn_line_display_name .rqn_line_polines .edit-input', function (event) {
         if (event.which == 13) {
             var input = $(this);
@@ -85,13 +86,14 @@
             input.hide().attr({'disabled': 'disabled'});
         }
     });
-
+    // Preventing insert different values from numeric values
     $(document).on('keypress', '.edit-input', function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
                 event.preventDefault();
         }
     });
 
+    //Setting the width of columns
     openerp.website.if_dom_contains('.supplier-header', function(elements){
         var line_header = $(elements);
         var new_width = line_header.width() / line_header.find('.line-header').length;
@@ -99,6 +101,7 @@
         $('.line-header, .order_line').width(new_width - 50);
     });
 
+    // Check and uncheck the check box in option lines
     $(document).on('click', 'div.input-checkbox input', function() {
         $(this).parents('.order_line').toggleClass('inpunt-check');
         var input = $(this);
@@ -120,6 +123,7 @@
             });
     });
 
+    // Button approve
     $(document).on('click', '.btn-approve', function() {
         var order_id = parseInt($(this).next('a').data('order_id'), 10);
         $('.front-console').addClass('loading');
@@ -139,6 +143,7 @@
             });
     });
 
+    // Modal displaying when clicking the image partner
     $(document).on('click', '.line-header a', function(event) {
         event.preventDefault();
             var order_id = parseInt($(this).data('order_id'), 10);
@@ -171,5 +176,21 @@
                 });
             return false;
         });
+
+    function display_msg_error(message){
+        openerp.jsonRpc('/shop/modal_msg_error/', 'call', {
+            'message': message,
+        }).then(function (view_modal) {
+            var modal = $(view_modal);
+            modal.appendTo($('.tab-content')).modal()
+                .on('hidden.bs.modal', function () {
+                    // When modal close
+                    $(this).remove();
+                });
+            setTimeout(function(){
+                modal.modal('hide');
+            }, 3000);
+            });
+    }
 
 })();

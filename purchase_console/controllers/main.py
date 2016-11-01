@@ -56,9 +56,10 @@ class Console(http.Controller):
             try:
                 res['message'] = getattr(requisition, action)()
                 res['result'] = True
-            except ValueError as e:
+            except Exception as e:
                 res['result'] = False
-                res['message'] = e.message
+                res['message'] = {'title': e[0],
+                                  'msg': e[1]}
         return res
 
     @http.route(
@@ -122,4 +123,13 @@ class Console(http.Controller):
         return request.website._render(
             "purchase_console.purchase_order_modal",
             {'order': order,
+             })
+
+    @http.route(
+        ['/shop/modal_msg_error/'],
+        type='json', auth="public", methods=['POST'], website=True)
+    def modal_message(self, message, **data):
+        return request.website._render(
+            "purchase_console.message_modal",
+            {'message': message,
              })

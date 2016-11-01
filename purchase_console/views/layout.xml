@@ -302,5 +302,25 @@ Letraset sheets containing Lorem Ipsum passage..
                 </div>
             </div>
         </template>
+
+        <template id="message_modal" name="Messages Modal">
+            <!-- Modal for displaying the messages -->
+            <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel" t-esc="message.get('title')"/>
+                        </div>
+                        <div class="modal-body">
+                            <div id="errors">
+                                <p t-esc="message.get('msg')"/>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </data>
 </openerp>

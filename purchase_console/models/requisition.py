@@ -15,8 +15,7 @@ from openerp import _, api, fields, models
 
 
 class PurchaseRequisition(models.Model):
-    _name = 'purchase.requisition'
-    _inherit = ['purchase.requisition', 'message.post.show.all']
+    _inherit = 'purchase.requisition'
     _excluded_states_po = ['cancel']
 
     @api.model

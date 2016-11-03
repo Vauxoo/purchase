@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <function model="ir.model" name="_add_write_patch_model">
+            <function eval="[[('model', '=', 'purchase.requisition')]]" model="ir.model" name="search"/>
+        </function>
+
+    </data>
+</openerp>
